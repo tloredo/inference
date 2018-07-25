@@ -1,0 +1,12 @@
+* Collect subroutines in _regress.f (not bootstrap)
+* Eliminate nmax/Nmax dimension params; Python will pass in 
+  arrays of correct size
+* Eliminate "stop" and write(*) in Datstt; add error indicator; same for Sixlin
+* Move integer declarations that preceded "implicit" to follow "implicit" (g77 requires)
+* Change "implicit double precision" to match "implicit real*8" elsewhere (g77 requires)
+* Make nmod a parameter, nmod=4
+* Add missing initializations for wsum* in wlss
+* Add f2py directives
+
+TODO:
+* wlss calls sixlin but uses only 1 of the 6 regressions; refactor

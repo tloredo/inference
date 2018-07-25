@@ -1,0 +1,45 @@
+!    -*- f90 -*-
+! Note: the context of this file is case sensitive.
+
+python module oinfo__user__routines 
+    interface oinfo_user_interface 
+        function logf(n,x) result (r)
+            integer optional,intent(in),check(len(x)>=n),depend(x) :: n=len(x)
+            real*8 dimension(n),intent(in) :: x
+            real*8 intent(out) :: r
+        end function logf
+    end interface oinfo_user_interface
+end python module oinfo__user__routines
+python module _obsinfo ! in 
+    interface  ! in :_obsinfo
+        subroutine pk_scales(n,f,x,fmax,df,dx,maxnr,tol,status) ! in :_obsinfo:_obsinfo.f
+            use oinfo__user__routines, f=> logf
+            integer optional,intent(in),check(len(x)>=n),depend(x) :: n=len(x)
+            external f
+            real*8 dimension(n),intent(in) :: x
+            real*8 intent(in) :: fmax
+            real*8 intent(in) :: df
+            real*8 dimension(n),intent(in,out),depend(n) :: dx
+            integer :: maxnr
+            real*8 :: tol
+            integer intent(out) :: status
+        end subroutine pk_scales
+        subroutine ninfol(lf,n,mu,lfmax,dp,iter,info,ierr,h,d2f,a) ! in :_obsinfo:_obsinfo.f
+            use oinfo__user__routines, lf=>logf
+            external lf
+            integer optional,intent(in),check(len(mu)>=n),depend(mu) :: n=len(mu)
+            real*8 dimension(n),intent(in) :: mu
+            real*8 intent(in) :: lfmax
+            real*8 dimension(n),intent(in),depend(n) :: dp
+            integer intent(in) :: iter
+            real*8 dimension(n,n),intent(out),depend(n,n) :: info
+            real*8 dimension(n,n),intent(out),depend(n,n) :: ierr
+            real*8 dimension(iter),intent(cache,hide),depend(iter) :: h
+            real*8 dimension(iter),intent(cache,hide),depend(iter) :: d2f
+            real*8 dimension(iter,iter),intent(cache,hide),depend(iter,iter) :: a
+        end subroutine ninfol
+    end interface 
+end python module _obsinfo
+
+! This file was auto-generated with f2py (version:2_2119).
+! See http://cens.ioc.ee/projects/f2py2e/

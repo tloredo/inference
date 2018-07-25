@@ -1,0 +1,145 @@
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+PIE Goals:
+
+Ability to make comparisons is key.
+
+Implement multiple methodologies with interfaces that are as
+similar as possible to enable comparison.
+
+Enable easy comparison of results---fitting a given model to given
+data with various methods, fitting a given model to different data sets,
+fitting given data to a variety of models.
+
+
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+Organization:
+
+Three approaches:  least squares/chisqr; maximum likelihood; Bayesian.
+
+Common structure:  Predict data; make inferences based on quality
+of the prediction.
+
+Differences:  How predictions are assessed (sum of squares, likelihood);
+what operations are done in sample space (condition, average) and
+parameter space (integrate, maximize).
+
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+Defining a model:
+
+Should a model be an instance implementing a parameter space, or
+a recipe or factory for creating copies of a particular parameter
+space?  The latter---this allows us to easily create
+several instances of the same model, e.g., to fit it to different
+data sets, or to the same data set with different methods.
+
+Thus a model should be a class.  Instances get used in actual
+inferences.  An inference class inherits a single model that defines
+the signals and (most of) the parameter space (predictors might
+also have parameters, e.g., a noise scaling factor).
+
+
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+Parameters:
+
+A simple interface:
+
+class MyModel(...):
+	theta = RealParam(...)
+	phi = RealParam(...)
+
+model = MyModel()
+
+We want model.x to behave as much like a float as possible,
+in particular, we don't want a big performance hit.
+
+We can implement this kind of thing by making RealParam a descriptor
+that returns a value that subclasses float.  However, note that
+theta is a *class* variable.  Its RealParam instance is created
+when the class is *defined*, not when it is later instantiated.
+Thus theta is not in model.__dict__; rather, an access to model.theta
+finds theta in MyModel.__dict__.  If we want multiple instances
+of MyModel to be able to maintain separate values of theta and
+phi, the descriptor must store its state, not in itself (i.e.,
+within the RealParam instance), but in the MyModel instance.
+
+We will want to change the value returned by model.theta without
+changing other aspects of its state (its allowed range, possible
+step sizes, flags indicating its status).  Thus when we *set*
+model.theta, either we must not only change its value but
+copy all the rest of its state, or we should save the state
+separately from the value.  The latter makes more sense; it
+makes the value behave more like a float and will have less
+of a performance penalty.  So RealParam instances should store
+both the parameter value and a "handler" for the value in
+the MyModel instance.
+
+Finally, since we'll want to have multiple RealParam instances
+in a single model, each instance has to store its value and
+handler in a separate instance variable.  The most sensible
+thing is to use the parameter's name---theta, phi---to create
+the instance variables.  So somehow a RealParam instance has 
+to learn the name it is assigned to when it is created.  The
+simplest way is awkward:
+
+	theta = RealParam('theta',...)
+
+Instead we can use a metaclass that examines MyModel's dict
+when it is created, identifies each RealParam instance, and
+notifies each of its name in the dict.
+
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+Defining a predictor:
+
+Similar to a model:  We'd like to analyze the same data with
+multiple methods or models.  Each analysis may involve
+altering the data (e.g., doing Monte Carlo to calibrate a
+confidence region; twiddling some of the data to do a
+sensitivity analysis).
+
+This indicates a predictor should be class; each time we
+want to look at the same data, we use a new instance of the
+class.
+
+Problem:  The original data will be in a class variable.
+Should the instance copy it on initialization?  This may
+be wasteful of space for large array data (e.g. images).
+We could use the class variable until data is simulated,
+at which point a new array is created and used for all
+subsequent data accesses.  But what about sensitivity analysis?
+If we just use the class variable and it is mutable (e.g.,
+an array), then changing the data will change it across
+all predictor instances.
+
+We could leave it for the user to be careful about this,
+providing a "usecopy" method.  Can we capture accesses
+that modify an array, and do so in a way that doesn't
+harm normal performance?
+
+We'd like to be able to jointly analyze multiple data sets
+of the same type.  Thus an inference class cannot inherit
+predictor base classes.  Instead, we'll group predictors
+together in a Predictors class (i.e., a predictor collection).
+This gives a nice symmetry between defining the parameter
+space via a Model class and the sample space via a Predictors
+class.
+
+Some predictors may have adjustable parameters.  Two
+possibilities for handling this suggest themselves.
+
+First, we can allow predictor instances to have parameter
+descriptors in them.  But then we have to figure out how
+to access these from the inference that uses them.  Since
+there may be multiple instances of the same predictor, 
+some kind of "renaming" of the parameter would have to
+occur, probably based on the name of the predictor in
+a predictor collection.
+
+Second, we can define parameters as descriptors in a
+predictor *collection* (just as for models), and pass
+them to predictors in the collection via arguments in
+the predictor constructors.  This has the virtue of
+easily allowing multiple predictors to use the same
+predictor parameter if necessary.  It also displays more
+symmetry between definitions of the parameter and sample
+spaces.
+

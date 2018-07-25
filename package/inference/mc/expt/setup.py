@@ -1,0 +1,68 @@
+#!/usr/bin/env python
+#
+# To build the extension (a shared library) run:
+#
+#       python setup.py build
+#
+# The shared library will be in package (directory) in a "lib..."
+# subdirectory of the "build" directory, which will be created if it's not
+# already present.  If you want to use the extension only with a
+# particular directory, just copy it there.
+#
+# To install the package in your site-packages directory (you will
+# likely need root or administrator access for this to be successful) 
+# run:
+#
+#       python setup.py install
+#
+# The latter will build it first if it hasn't been built already.
+#
+# To install the package in some other directory (e.g., some place
+# on your PYTHONPATH, other than site-packages):
+#
+#       python setup.py install --install-base <path-to-destination>
+#
+# In this example, the package's single module would be accessed via:
+#
+# >>> import example.example
+#
+# You may delete the build directory after installation.
+#
+# To customize for a different extension, just modify the
+# two parts identified by "CUSTOMIZE HERE":  creating the list
+# of extension modules ("modules = ..."), and defining background
+# info in the actual "setup(...)" command.
+
+from distutils.core import setup, Extension
+import numpy
+
+def add_numpy_include(module):
+    "Add the include path needed to build extensions which use numpy."
+    module.include_dirs.append(numpy.get_numpy_include())
+
+
+###################### CUSTOMIZE HERE #######################
+# Make a list of modules to build; this example has just one.
+modules = [ Extension('_ppssampler',  ['_ppssampler.c', 
+    'sampford.c', 'compact5table.c','randomkit.c']) ]
+#modules = [ Extension('_fpsample',  ['_fpsample.c', 'randomkit.c']) ]
+#############################################################
+
+# Add the info needed to use numpy to each module.
+# (You needn't alter this unless some of the modules make no
+# use of numpy.)
+for module in modules:
+	add_numpy_include(module)
+
+
+###################### CUSTOMIZE HERE #######################
+# Finally, build the extension(s).
+setup(name = "ppssampler",
+      version = "0.1",
+      maintainer = "Tom Loredo",
+      maintainer_email = "loredo@astro.cornell.edu",
+      description = "Finite population samplers",
+      url = "http://www.astro.cornell.edu/staff/loredo/python/",
+	  ext_modules = modules)
+#############################################################
+

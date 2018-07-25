@@ -1,0 +1,148 @@
+!    -*- f90 -*-
+! Note: the context of this file is case sensitive.
+
+python module _cosmo ! in 
+    interface  ! in :_cosmo
+        subroutine set_frw_cosmo(hh,om,ol) ! in :_cosmo:_cosmo.f
+            real*8 intent(in) :: hh
+            real*8 intent(in) :: om
+            real*8 intent(in) :: ol
+            real*8 :: h
+            real*8 :: o_m
+            real*8 :: o_l
+            real*8 :: o_k
+            real*8 :: rto_k
+            real*8 :: c_h
+            common /cosmo_cb/ h,o_m,o_l,o_k,rto_k,c_h
+        end subroutine set_frw_cosmo
+        function ldist(z) ! in :_cosmo:_cosmo.f
+            intent(out) ldist
+            real*8 intent(in) :: z
+            real*8 :: h
+            real*8 :: o_m
+            real*8 :: o_l
+            real*8 :: o_k
+            real*8 :: rto_k
+            real*8 :: c_h
+            real*8 intent(out) :: ldist
+            common /cosmo_cb/ h,o_m,o_l,o_k,rto_k,c_h
+        end function ldist
+        function coord_int(z) ! in :_cosmo:_cosmo.f
+            intent(out) coord_int
+            real*8 intent(in) :: z
+            real*8 :: h
+            real*8 :: o_m
+            real*8 :: o_l
+            real*8 :: o_k
+            real*8 :: rto_k
+            real*8 :: c_h
+            real*8 intent(out) :: coord_int
+            common /cosmo_cb/ h,o_m,o_l,o_k,rto_k,c_h
+        end function coord_int
+        subroutine nldist(n,zvals,ldvals) ! in :_cosmo:_cosmo.f
+            integer optional,intent(in),check(len(zvals)>=n),depend(zvals) :: n=len(zvals)
+            real*8 dimension(n),intent(in) :: zvals
+            real*8 dimension(n),intent(out),depend(n) :: ldvals
+            real*8 :: h
+            real*8 :: o_m
+            real*8 :: o_l
+            real*8 :: o_k
+            real*8 :: rto_k
+            real*8 :: c_h
+            common /cosmo_cb/ h,o_m,o_l,o_k,rto_k,c_h
+        end subroutine nldist
+        function mu_z(z) ! in :_cosmo:_cosmo.f
+            intent(out) mu_z
+            real*8 intent(in) :: z
+            real*8 :: h
+            real*8 :: o_m
+            real*8 :: o_l
+            real*8 :: o_k
+            real*8 :: rto_k
+            real*8 :: c_h
+            real*8 intent(out) :: mu_z
+            common /cosmo_cb/ h,o_m,o_l,o_k,rto_k,c_h
+        end function mu_z
+        function mu_z_noh(z) ! in :_cosmo:_cosmo.f
+            intent(out) mu_z_noh
+            real*8 intent(in) :: z
+            real*8 :: h
+            real*8 :: o_m
+            real*8 :: o_l
+            real*8 :: o_k
+            real*8 :: rto_k
+            real*8 :: c_h
+            real*8 intent(out) :: mu_z_noh
+            common /cosmo_cb/ h,o_m,o_l,o_k,rto_k,c_h
+        end function mu_z_noh
+        function e_hub(z) ! in :_cosmo:_cosmo.f
+            intent(out) e_hub
+            real*8 intent(in) :: z
+            real*8 :: h
+            real*8 :: o_m
+            real*8 :: o_l
+            real*8 :: o_k
+            real*8 :: rto_k
+            real*8 :: c_h
+            real*8 intent(out) :: e_hub
+            common /cosmo_cb/ h,o_m,o_l,o_k,rto_k,c_h
+        end function e_hub
+        function vol_elem(z) ! in :_cosmo:_cosmo.f
+            intent(out) vol_elem
+            real*8 intent(in) :: z
+            real*8 :: h
+            real*8 :: o_m
+            real*8 :: o_l
+            real*8 :: o_k
+            real*8 :: rto_k
+            real*8 :: c_h
+            real*8 intent(out) :: vol_elem
+            common /cosmo_cb/ h,o_m,o_l,o_k,rto_k,c_h
+        end function vol_elem
+        function dlbt_z(z) ! in :_cosmo:_cosmo.f
+            intent(out) dlbt_z
+            real*8 intent(in) :: z
+            real*8 :: h
+            real*8 :: o_m
+            real*8 :: o_l
+            real*8 :: o_k
+            real*8 :: rto_k
+            real*8 :: c_h
+            real*8 intent(out) :: dlbt_z
+            common /cosmo_cb/ h,o_m,o_l,o_k,rto_k,c_h
+        end function dlbt_z
+        function dage() ! in :_cosmo:_cosmo.f
+            intent(out) dage
+            real*8 :: h
+            real*8 :: o_m
+            real*8 :: o_l
+            real*8 :: o_k
+            real*8 :: rto_k
+            real*8 :: c_h
+            real*8 intent(out) :: dage
+            common /cosmo_cb/ h,o_m,o_l,o_k,rto_k,c_h
+        end function dage
+        subroutine set_ffid(ffid) ! in :_cosmo:_cosmo.f
+            real*8 intent(in) :: ffid
+            real*8 :: f_fid
+            common /ffid_cb/ f_fid
+        end subroutine set_ffid
+        subroutine set_lum(lum) ! in :_cosmo:_cosmo.f
+            real*8 intent(in) :: lum
+            real*8 :: lambda
+            common /stdcdl_cb/ lambda
+        end subroutine set_lum
+        function flux2z(f) ! in :_cosmo:_cosmo.f
+            intent(out) flux2z
+            real*8 intent(in) :: f
+            real*8 :: lambda
+            real*8 :: f_fid
+            real*8 intent(out) :: flux2z
+            common /stdcdl_cb/ lambda
+            common /ffid_cb/ f_fid
+        end function flux2z
+    end interface 
+end python module _cosmo
+
+! This file was auto-generated with f2py (version:2_3979).
+! See http://cens.ioc.ee/projects/f2py2e/

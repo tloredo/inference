@@ -1,0 +1,63 @@
+store grid and optimiz'n results?
+
+grid integrals - logSummer, agrid
+
+plot methods for grids
+
+regexp to match ' =' with inspect in Inference()
+
+Multigrids
+
+show_extra abstract method user can override to display derived params
+that get set in on_use
+
+fix vs. freeze?
+
+lowercase vs. underscores?
+
+info matrix
+
+fix_all
+
+makes listener/broadcaster behavior more sophisticated: PyDispatcher?
+abstract ParamObserver or ParamListener class?
+add delListener to __del__ method
+http://www.research.ibm.com/designpatterns/example.htm
+http://pydispatcher.sourceforge.net/
+http://aspn.activestate.com/ASPN/Cookbook/Python/Recipe/87056
+http://aspn.activestate.com/ASPN/Cookbook/Python/Recipe/81983
+
+----- Predictor behavior ------
+
+Predictor params - copy from predictorParams.py
+
+mock_data
+
+monitor param changes in predictors?  Separately monitor
+SignalModel and Predictor params?
+
+Clean up SampledGaussianPredictor
+
+Copying predictor data between instances?
+
+Delay copying of predictor class data?  Is there a way to
+check for data modification?
+
+
+----- New Predictors ------
+
+BinnedGaussianPredictor
+
+ChannelGaussianPredictor or ResponseGaussianPredictor
+
+ConvolvedGaussianPredictor
+
+PoissonPredictors
+
+OnOffPredictors
+
+PoissonPointPredictor
+
+SurveyPredictor
+
+NoisySurveyPredictor

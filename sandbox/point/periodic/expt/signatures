@@ -1,0 +1,176 @@
+::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+binbounds - Function signature:
+  binbounds(phibins,[nbins])
+Required arguments:
+  phibins : in/output rank-1 array('d') with bounds (nbins)
+Optional arguments:
+  nbins := len(phibins) input int
+
+
+::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+chisqr - Function signature:
+  chisqr = chisqr(ndat,bins,[nbins])
+Required arguments:
+  ndat : input int
+  bins : input rank-1 array('i') with bounds (nbins)
+Optional arguments:
+  nbins := len(bins) input int
+Return objects:
+  chisqr : float
+
+
+::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+fbindata - Function signature:
+  dphi = fbindata(phases,phi,phibins,bins,[ndat,nbins])
+Required arguments:
+  phases : input rank-1 array('d') with bounds (ndat)
+  phi : input float
+  phibins : input rank-1 array('d') with bounds (nbins)
+  bins : in/output rank-1 array('i') with bounds (nbins)
+Optional arguments:
+  ndat := len(phases) input int
+  nbins := len(phibins) input int
+Return objects:
+  dphi : float
+
+
+::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+lcl_wp - Function signature:
+  lcl_wp = lcl_wp(ndat,bins,[nbins])
+Required arguments:
+  ndat : input int
+  bins : input rank-1 array('i') with bounds (nbins)
+Optional arguments:
+  nbins := len(bins) input int
+Return objects:
+  lcl_wp : float
+
+
+::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+limult - Function signature:
+  limult = limult(ndat,bins,[nbins])
+Required arguments:
+  ndat : input int
+  bins : input rank-1 array('i') with bounds (nbins)
+Optional arguments:
+  nbins := len(bins) input int
+Return objects:
+  limult : float
+
+
+::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+ll_wpb - Function signature:
+  ll_wpb = ll_wpb(ndat,bins,[nbins])
+Required arguments:
+  ndat : input int
+  bins : input rank-1 array('i') with bounds (nbins)
+Optional arguments:
+  nbins := len(bins) input int
+Return objects:
+  ll_wpb : float
+
+
+::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+lodds - Function signature:
+  lodds = lodds(nbins,ndat,wlo,whi,intimult,lfac)
+Required arguments:
+  nbins : input int
+  ndat : input int
+  wlo : input float
+  whi : input float
+  intimult : input float
+  lfac : input float
+Return objects:
+  lodds : float
+
+
+::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+phasecalc - Function signature:
+  phasecalc(w,wdot,wddot,data,phases,[ndat])
+Required arguments:
+  w : input float
+  wdot : input float
+  wddot : input float
+  data : input rank-1 array('d') with bounds (ndat)
+  phases : in/output rank-1 array('d') with bounds (ndat)
+Optional arguments:
+  ndat := len(data) input int
+
+
+::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+plimult - Function signature:
+  plimult = plimult(ndat,bins,[nbins])
+Required arguments:
+  ndat : input int
+  bins : input rank-1 array('i') with bounds (nbins)
+Optional arguments:
+  nbins := len(bins) input int
+Return objects:
+  plimult : float
+
+
+::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+qlw_exact - Function signature:
+  qlike,chi2 = qlw_exact(lndfac,phases,phibins,bins,lfac,[ndat,nbins])
+Required arguments:
+  lndfac : input float
+  phases : input rank-1 array('d') with bounds (ndat)
+  phibins : in/output rank-1 array('d') with bounds (nbins)
+  bins : in/output rank-1 array('i') with bounds (nbins)
+  lfac : input float
+Optional arguments:
+  ndat := len(phases) input int
+  nbins := len(phibins) input int
+Return objects:
+  qlike : float
+  chi2 : float
+
+
+::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+qlw_trap - Function signature:
+  qlike,chi2 = qlw_trap(lndfac,phases,phibins,bins,absc,lfac,[ndat,nbins,npts])
+Required arguments:
+  lndfac : input float
+  phases : input rank-1 array('d') with bounds (ndat)
+  phibins : in/output rank-1 array('d') with bounds (nbins)
+  bins : in/output rank-1 array('i') with bounds (nbins)
+  absc : input rank-1 array('d') with bounds (npts)
+  lfac : input float
+Optional arguments:
+  ndat := len(phases) input int
+  nbins := len(phibins) input int
+  npts := len(absc) input int
+Return objects:
+  qlike : float
+  chi2 : float
+
+
+::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+rate_wb - Function signature:
+  r,r2 = rate_wb(lndfac,phases,phibins,bins,lfac,rphases,[ndat,nbins,nt])
+Required arguments:
+  lndfac : input float
+  phases : input rank-1 array('d') with bounds (ndat)
+  phibins : in/output rank-1 array('d') with bounds (nbins)
+  bins : in/output rank-1 array('i') with bounds (nbins)
+  lfac : input float
+  rphases : input rank-1 array('d') with bounds (nt)
+Optional arguments:
+  ndat := len(phases) input int
+  nbins := len(phibins) input int
+  nt := len(rphases) input int
+Return objects:
+  r : rank-1 array('d') with bounds (nt)
+  r2 : rank-1 array('d') with bounds (nt)
+
+
+::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+trap_absc - Function signature:
+  absc = trap_absc(npts,nbins)
+Required arguments:
+  npts : input int
+  nbins : input int
+Return objects:
+  absc : rank-1 array('d') with bounds (npts)
+
+

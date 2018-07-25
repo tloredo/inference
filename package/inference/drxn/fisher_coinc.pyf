@@ -1,0 +1,46 @@
+!    -*- f90 -*-
+! Note: the context of this file is case sensitive.
+
+python module fisher_coinc ! in 
+    interface  ! in :fisher_coinc
+        subroutine sig_to_kappa(sig,kappa) ! in :fisher_coinc:fisher_coinc.f
+            real*8 intent(in) :: sig
+            real*8 intent(out) :: kappa
+        end subroutine sig_to_kappa
+        function doublet_lbf(drxn1,kappa1,lsk1,drxn2,kappa2,lsk2) ! in :fisher_coinc:fisher_coinc.f
+            real*8 dimension(3),intent(in) :: drxn1
+            real*8 intent(in) :: kappa1
+            real*8 intent(in) :: lsk1
+            real*8 dimension(3),intent(in) :: drxn2
+            real*8 intent(in) :: kappa2
+            real*8 intent(in) :: lsk2
+            real*8 :: doublet_lbf
+        end function doublet_lbf
+        function triplet_lbf(drxn1,kappa1,lsk1,drxn2,kappa2,lsk2,drxn3,kappa3,lsk3) ! in :fisher_coinc:fisher_coinc.f
+            real*8 dimension(3),intent(in) :: drxn1
+            real*8 intent(in) :: kappa1
+            real*8 intent(in) :: lsk1
+            real*8 dimension(3),intent(in) :: drxn2
+            real*8 intent(in) :: kappa2
+            real*8 intent(in) :: lsk2
+            real*8 dimension(3),intent(in) :: drxn3
+            real*8 intent(in) :: kappa3
+            real*8 intent(in) :: lsk3
+            real*8 :: triplet_lbf
+        end function triplet_lbf
+        function multiplet_lbf(nd,drxn,kappa,lsk) ! in :fisher_coinc:fisher_coinc.f
+            integer optional,intent(in),check(shape(drxn,1)==nd),depend(drxn) :: nd=shape(drxn,1)
+            real*8 dimension(3,nd),intent(in) :: drxn
+            real*8 dimension(nd),intent(in),depend(nd) :: kappa
+            real*8 dimension(nd),intent(in),depend(nd) :: lsk
+            real*8 :: multiplet_lbf
+        end function multiplet_lbf
+        function lsinhc(x) ! in :fisher_coinc:fisher_coinc.f
+            real*8 :: x
+            real*8 :: lsinhc
+        end function lsinhc
+    end interface 
+end python module fisher_coinc
+
+! This file was auto-generated with f2py (version:2_1863).
+! See http://cens.ioc.ee/projects/f2py2e/

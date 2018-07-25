@@ -1,0 +1,34 @@
+!    -*- f90 -*-
+! Note: the context of this file is case sensitive.
+
+python module __user__routines 
+    interface
+        function func(n,args) result (r)
+            integer intent(in) :: n
+            real*8 dimension(n),intent(in) :: args
+            real*8 intent(out) :: r
+        end function func
+    end interface
+end python module __user__routines
+python module _adapt ! in 
+    interface  ! in :adapt
+        subroutine adapt(ndim,a,b,minpts,maxpts,functn,eps,relerr,lenwrk,wrkstr,finest,ifail) ! in :adapt:adapt_py.f
+            use __user__routines, functn=>func
+            integer optional,intent(in),check(len(a)>=ndim),depend(a) :: ndim=len(a)
+            real*8 dimension(ndim),intent(in) :: a
+            real*8 dimension(ndim),intent(in),depend(ndim) :: b
+            integer intent(in,out) :: minpts
+            integer intent(in) :: maxpts
+            external functn
+            real*8 intent(in) :: eps
+            real*8 intent(out) :: relerr
+            integer intent(in) :: lenwrk
+            real*8 dimension(lenwrk),intent(cache,hide),depend(lenwrk) :: wrkstr
+            real*8 intent(out) :: finest
+            integer intent(out) :: ifail
+        end subroutine adapt
+    end interface 
+end python module _adapt
+
+! This file was auto-generated with f2py (version:2_1693).
+! See http://cens.ioc.ee/projects/f2py2e/

@@ -1,0 +1,112 @@
+!    -*- f90 -*-
+! Note: the context of this file is case sensitive.
+
+python module _mvnt ! in 
+    interface  ! in :_mvnt
+        subroutine mvnini(n,s,l,norm,inv,h,err) ! in :_mvnt:_mvnt.f
+            integer optional,intent(in),check(shape(s,0)==n),depend(s) :: n=shape(s,0)
+            real*8 dimension(n,n),intent(in,out,copy) :: s
+            real*8 dimension(n,n),intent(out),depend(n,n) :: l
+            real*8 intent(out) :: norm
+            integer intent(in) :: inv
+            real*8 dimension(n),intent(cache,hide),depend(n) :: h
+            integer intent(out) :: err
+        end subroutine mvnini
+        subroutine mvnsamp(n,mu,l,snsamps,samp) ! in :_mvnt:_mvnt.f
+            integer optional,intent(in),check(len(mu)>=n),depend(mu) :: n=len(mu)
+            real*8 dimension(n),intent(in) :: mu
+            real*8 dimension(n,n),intent(in),depend(n,n) :: l
+            real*8 dimension(n),intent(in),depend(n) :: snsamps
+            real*8 dimension(n),intent(out),depend(n) :: samp
+        end subroutine mvnsamp
+        subroutine mvnsampq(n,mu,l,snsamps,samp,q) ! in :_mvnt:_mvnt.f
+            integer optional,intent(in),check(len(mu)>=n),depend(mu) :: n=len(mu)
+            real*8 dimension(n),intent(in) :: mu
+            real*8 dimension(n,n),intent(in),depend(n,n) :: l
+            real*8 dimension(n),intent(in),depend(n) :: snsamps
+            real*8 dimension(n),intent(out),depend(n) :: samp
+            real*8 intent(out) :: q
+        end subroutine mvnsampq
+        function mvnden(n,samp,mu,norm,l,work) ! in :_mvnt:_mvnt.f
+            intent(out) mvnden
+            integer optional,intent(in),check(len(samp)>=n),depend(samp) :: n=len(samp)
+            real*8 dimension(n),intent(in) :: samp
+            real*8 dimension(n),intent(in),depend(n) :: mu
+            real*8 intent(in) :: norm
+            real*8 dimension(n,n),intent(in),depend(n,n) :: l
+            real*8 dimension(n),intent(in),depend(n) :: work
+            real*8 intent(out) :: mvnden
+        end function mvnden
+        function mvnqform(n,samp,mu,l,work) ! in :_mvnt:_mvnt.f
+            intent(out) mvnqform
+            integer optional,intent(in),check(len(samp)>=n),depend(samp) :: n=len(samp)
+            real*8 dimension(n),intent(in) :: samp
+            real*8 dimension(n),intent(in),depend(n) :: mu
+            real*8 dimension(n,n),intent(in),depend(n,n) :: l
+            real*8 dimension(n),intent(in),depend(n) :: work
+            real*8 intent(out) :: mvnqform
+        end function mvnqform
+        function mvnkde(ndim,ncomp,pt,nodes,norm,l,work,scale) ! in :_mvnt:_mvnt.f
+            intent(out) mvnkde
+            integer optional,intent(in),check(len(pt)>=ndim),depend(pt) :: ndim=len(pt)
+            integer optional,intent(in),check(shape(nodes,1)==ncomp),depend(nodes) :: ncomp=shape(nodes,1)
+            real*8 dimension(ndim),intent(in) :: pt
+            real*8 dimension(ndim,ncomp),intent(in),depend(ndim) :: nodes
+            real*8 intent(in) :: norm
+            real*8 dimension(ndim,ndim),intent(in),depend(ndim,ndim) :: l
+            real*8 dimension(ndim),intent(in),depend(ndim) :: work
+            real*8 intent(in) :: scale
+            real*8 intent(out) :: mvnkde
+        end function mvnkde
+        subroutine mvtini(n,nu,h,l,norm,work,err) ! in :_mvnt:_mvnt.f
+            integer optional,intent(in),check(shape(h,0)==n),depend(h) :: n=shape(h,0)
+            integer intent(in) :: nu
+            real*8 dimension(n,n),intent(in,out) :: h
+            real*8 dimension(n,n),intent(out),depend(n,n) :: l
+            real*8 intent(out) :: norm
+            real*8 dimension(n),intent(cache,hide),depend(n) :: work
+            integer intent(out) :: err
+        end subroutine mvtini
+        subroutine mvtsamp(n,mu,l,nu,snsamps,gamsamp,samp) ! in :_mvnt:_mvnt.f
+            integer optional,intent(in),check(len(mu)>=n),depend(mu) :: n=len(mu)
+            real*8 dimension(n),intent(in) :: mu
+            real*8 dimension(n,n),intent(in),depend(n,n) :: l
+            integer intent(in) :: nu
+            real*8 dimension(n),intent(in),depend(n) :: snsamps
+            real*8 intent(in) :: gamsamp
+            real*8 dimension(n),intent(out),depend(n) :: samp
+        end subroutine mvtsamp
+        subroutine mvtsampq(n,mu,l,nu,snsamps,gamsamp,samp,q) ! in :_mvnt:_mvnt.f
+            integer optional,intent(in),check(len(mu)>=n),depend(mu) :: n=len(mu)
+            real*8 dimension(n),intent(in) :: mu
+            real*8 dimension(n,n),intent(in),depend(n,n) :: l
+            integer intent(in) :: nu
+            real*8 dimension(n),intent(in),depend(n) :: snsamps
+            real*8 intent(in) :: gamsamp
+            real*8 dimension(n),intent(out),depend(n) :: samp
+            real*8 intent(out) :: q
+        end subroutine mvtsampq
+        function mvtden(n,samp,mu,nu,norm,l,work) ! in :_mvnt:_mvnt.f
+            intent(out) mvtden
+            integer optional,intent(in),check(len(samp)>=n),depend(samp) :: n=len(samp)
+            real*8 dimension(n),intent(in) :: samp
+            real*8 dimension(n),intent(in),depend(n) :: mu
+            integer intent(in) :: nu
+            real*8 intent(in) :: norm
+            real*8 dimension(n,n),intent(in),depend(n,n) :: l
+            real*8 dimension(n),intent(in),depend(n) :: work
+            real*8 intent(out) :: mvtden
+        end function mvtden
+        function mvtdenq(n,nu,norm,q) ! in :_mvnt:_mvnt.f
+            intent(out) mvtdenq
+            integer intent(in) :: n
+            integer intent(in) :: nu
+            real*8 intent(in) :: norm
+            real*8 intent(in) :: q
+            real*8 intent(out) :: mvtdenq
+        end function mvtdenq
+    end interface 
+end python module _mvnt
+
+! This file was auto-generated with f2py (version:2_3649).
+! See http://cens.ioc.ee/projects/f2py2e/

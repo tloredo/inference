@@ -1,0 +1,18 @@
+!    -*- f90 -*-
+! Note: the context of this file is case sensitive.
+
+python module mk2d ! in 
+    interface  ! in :mk2d
+        subroutine mk2dc(n,array) ! in :mk2d:mk2d.f
+            integer intent(in) :: n
+            real*8 dimension(n,n),intent(c,out),depend(n,n) :: array
+        end subroutine mk2dc
+        subroutine mk2df(n,array) ! in :mk2d:mk2d.f
+            integer intent(in) :: n
+            real*8 dimension(n,n),intent(out),depend(n,n) :: array
+        end subroutine mk2df
+    end interface 
+end python module mk2d
+
+! This file was auto-generated with f2py (version:2_1693).
+! See http://cens.ioc.ee/projects/f2py2e/

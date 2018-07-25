@@ -1,0 +1,57 @@
+!    -*- f90 -*-
+! Note: the context of this file is case sensitive.
+
+python module asurvkm ! in 
+    interface  ! in :asurvkm
+        subroutine kmestm(ind,x,ntot,ierr,sx,vx,smean,error,kdiff,start,binsiz,lstep,ixu,zxu,ixc,zxc,bwrk1,bwrk2,bwrk3,z1,itemp,indexx,atie,risk,iwrk1,wrk1) ! in :asurvkm:asurvkm.f
+            integer dimension(ntot),intent(in) :: ind
+            real*8 dimension(ntot),intent(in),depend(ntot) :: x
+            integer optional,intent(in),check(len(ind)>=ntot),depend(ind) :: ntot=len(ind)
+            integer intent(out) :: ierr
+            real*8 dimension(ntot),intent(out),depend(ntot) :: sx
+            real*8 dimension(ntot),intent(out),depend(ntot) :: vx
+            real*8 intent(out) :: smean
+            real*8 intent(out) :: error
+            integer intent(in) :: kdiff
+            real*8 intent(in) :: start
+            real*8 intent(in) :: binsiz
+            integer intent(in) :: lstep
+            integer intent(out) :: ixu
+            real*8 dimension(ntot),intent(out),depend(ntot) :: zxu
+            integer intent(out) :: ixc
+            real*8 dimension(ntot),intent(out),depend(ntot) :: zxc
+            real*8 dimension(lstep),intent(out),depend(lstep) :: bwrk1
+            real*8 dimension(lstep),intent(out),depend(lstep) :: bwrk2
+            real*8 dimension(lstep),intent(out),depend(lstep) :: bwrk3
+            real*8 dimension(ntot),intent(cache,hide),depend(ntot) :: z1
+            integer dimension(ntot),intent(cache,hide),depend(ntot) :: itemp
+            integer dimension(ntot),intent(cache,hide),depend(ntot) :: indexx
+            real*8 dimension(ntot),intent(cache,hide),depend(ntot) :: atie
+            real*8 dimension(ntot),intent(cache,hide),depend(ntot) :: risk
+            integer dimension(ntot),intent(cache,hide),depend(ntot) :: iwrk1
+            real*8 dimension(ntot),intent(cache,hide),depend(ntot) :: wrk1
+        end subroutine kmestm
+        subroutine plestm(nu,u,nc,c,s,v,smean,sigma,ichange,nchange,l) ! in :asurvkm:asurvkm.f
+            integer optional,intent(in),check(len(u)>=nu),depend(u) :: nu=len(u)
+            real*8 dimension(nu),intent(in) :: u
+            integer optional,intent(in),check(len(c)>=nc),depend(c) :: nc=len(c)
+            real*8 dimension(nc),intent(in) :: c
+            real*8 dimension(nu),intent(out),depend(nu) :: s
+            real*8 dimension(nu),intent(out),depend(nu) :: v
+            real*8 intent(out) :: smean
+            real*8 intent(out) :: sigma
+            integer intent(out) :: ichange
+            integer intent(out) :: nchange
+            integer dimension(nu),intent(cache,hide),depend(nu) :: l
+        end subroutine plestm
+        subroutine quart(u,s,iu,fint) ! in :asurvkm:asurvkm.f
+            real*8 dimension(iu),intent(in) :: u
+            real*8 dimension(iu),intent(in),depend(iu) :: s
+            integer optional,intent(in),check(len(u)>=iu),depend(u) :: iu=len(u)
+            real*8 dimension(3),intent(out) :: fint
+        end subroutine quart
+    end interface 
+end python module asurvkm
+
+! This file was auto-generated with f2py (version:2_2119).
+! See http://cens.ioc.ee/projects/f2py2e/

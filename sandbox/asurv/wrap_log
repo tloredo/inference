@@ -1,0 +1,20 @@
+
+* Collected KM estimator subroutines
+* Eliminate printing statements
+* Eliminate "J" parameter selector/slot; Python will pass only the
+  variable of interest.  This requires changing several dimension
+  statements and removing parameters.
+* Eliminate IBIN param; dim for all binning params is the # of bins.
+* Add SMEAN, ERROR params (just printed in original)
+* SUMRY has a dimension inconsistency with its calls for the
+  U() param.  Made S and U both of dim(IU) --- the Python
+  wrapper should ensure this.  Renamed QUART.
+* Separate out KMDIF
+
+% make asurvkm-raw.pyf
+
+Makefile creates .pyf to expose kmestm, kmdif, plestm and quart
+
+No .pyf editing needed
+
+% make _asurvkm.so

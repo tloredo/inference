@@ -1,0 +1,60 @@
+!    -*- f90 -*-
+! Note: the context of this file is case sensitive.
+
+python module _regress ! in 
+    interface  ! in :_regress
+        subroutine bess(npts,y1,y1err,y2,y2err,cerr,a,b,avar,bvar,bvar_ifab,xi,zeta) ! in :_regress:_regress.f
+            integer optional,intent(in),check(len(y1)>=npts),depend(y1) :: npts=len(y1)
+            double precision dimension(npts),intent(in) :: y1
+            double precision dimension(npts),intent(in),depend(npts) :: y1err
+            double precision dimension(npts),intent(in),depend(npts) :: y2
+            double precision dimension(npts),intent(in),depend(npts) :: y2err
+            double precision dimension(npts),intent(in),depend(npts) :: cerr
+            double precision dimension(4),intent(out) :: a
+            double precision dimension(4),intent(out) :: b
+            double precision dimension(4),intent(out) :: avar
+            double precision dimension(4),intent(out) :: bvar
+            double precision dimension(4),intent(out) :: bvar_ifab
+            double precision dimension(npts,4),intent(cache,hide),depend(npts) :: xi
+            double precision dimension(npts,4),intent(cache,hide),depend(npts) :: zeta
+        end subroutine bess
+        subroutine wlss(npts,x1,y2,y2err,a,avar,b,bvar,evar,res,ierr) ! in :_regress:_regress.f
+            integer optional,intent(in),check(len(x1)>=npts),depend(x1) :: npts=len(x1)
+            real*8 dimension(npts),intent(in) :: x1
+            real*8 dimension(npts),intent(in),depend(npts) :: y2
+            real*8 dimension(npts),intent(in),depend(npts) :: y2err
+            double precision intent(out) :: a
+            double precision intent(out) :: avar
+            double precision intent(out) :: b
+            double precision intent(out) :: bvar
+            double precision intent(out) :: evar
+            real*8 dimension(npts),intent(cache,hide),depend(npts) :: res
+            integer intent(out) :: ierr
+        end subroutine wlss
+        subroutine datstt(n,x,y,xavg,varx,yavg,vary,varxy,rho,ierr) ! in :_regress:_regress.f
+            integer optional,intent(in),check(len(x)>=n),depend(x) :: n=len(x)
+            real*8 dimension(n),intent(in) :: x
+            real*8 dimension(n),intent(in),depend(n) :: y
+            real*8 intent(out) :: xavg
+            real*8 intent(out) :: varx
+            real*8 intent(out) :: yavg
+            real*8 intent(out) :: vary
+            real*8 intent(out) :: varxy
+            real*8 intent(out) :: rho
+            integer intent(out) :: ierr
+        end subroutine datstt
+        subroutine sixlin(n,x,y,a,siga,b,sigb,ierr) ! in :_regress:_regress.f
+            integer optional,intent(in),check(len(x)>=n),depend(x) :: n=len(x)
+            real*8 dimension(n),intent(in) :: x
+            real*8 dimension(n),intent(in),depend(n) :: y
+            real*8 dimension(6),intent(out) :: a
+            real*8 dimension(6),intent(out) :: siga
+            real*8 dimension(6),intent(out) :: b
+            real*8 dimension(6),intent(out) :: sigb
+            integer intent(out) :: ierr
+        end subroutine sixlin
+    end interface 
+end python module _regress
+
+! This file was auto-generated with f2py (version:2_2119).
+! See http://cens.ioc.ee/projects/f2py2e/

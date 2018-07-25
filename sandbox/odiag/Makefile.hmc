@@ -1,0 +1,66 @@
+FFLAGS = -u
+
+IO = /home/lagrange/loredo/fort/ioutil.a
+NR = /home/lagrange/loredo/fort/dpnr.a
+MCMC = /home/lagrange/loredo/bayes/mcmc/output.o
+
+#-----------------------------------------------------------------------
+# Make a time series of mean values from Metropolis samples.
+meants:  meants.o $(IO)
+	f77 -o meants meants.o $(IO)
+
+#-----------------------------------------------------------------------
+# Sample params a particular time in the Metropolis time series.
+pickt:  pickt.o $(IO)
+	f77 -o pickt pickt.o $(IO)
+
+#-----------------------------------------------------------------------
+# Sample 2 params a particular time in the Metropolis time series.
+pickt2:  pickt2.o $(IO)
+	f77 -o pickt2 pickt2.o $(IO)
+
+#-----------------------------------------------------------------------
+# Sample a param at a particular time in the time series & bin.
+bint:  bint.o $(IO)
+	f77 -o bint bint.o $(IO)
+
+#-----------------------------------------------------------------------
+# Correlation function from HMC samples with FFTs:
+fcorr:  fcorr.o $(IO) $(NR)
+	f77 -o fcorr fcorr.o $(IO) $(NR)
+
+#-----------------------------------------------------------------------
+# Correlation function from HMC samples:
+corr:  corr.o $(IO)
+	f77 -o corr corr.o $(IO)
+
+#-----------------------------------------------------------------------
+# Correlation function (w/ 0 padding) from HMC samples:
+corr0:  corr0.o $(IO)
+	f77 -o corr0 corr0.o $(IO)
+
+#-----------------------------------------------------------------------
+# Avg. correlation function from several runs of HMC samples:
+acorr:  acorr.o $(IO)
+	f77 -o acorr acorr.o $(IO)
+
+#-----------------------------------------------------------------------
+# Estimate the hessian from samples.
+hess:  hess.o $(NR) $(IO)
+	f77 -o hess hess.o $(NR) $(IO)
+
+#-----------------------------------------------------------------------
+# Find the mean & sigma for a variable in 1 run with AR:
+ar1:  ar1.o $(MCMC) $(NR) $(IO)
+	f77 -o ar1 ar1.o $(MCMC) $(NR) $(IO)
+
+#-----------------------------------------------------------------------
+# Diagnose EQ in MCMC runs:
+diag:  diag.o $(MCMC) $(NR) $(IO)
+	f77 -o diag diag.o $(MCMC) $(NR) $(IO)
+
+#-----------------------------------------------------------------------
+# Get moments from MCMC output:
+moments:  moments.o $(MCMC) $(NR) $(IO)
+	f77 -o moments moments.o $(MCMC) $(NR) $(IO)
+

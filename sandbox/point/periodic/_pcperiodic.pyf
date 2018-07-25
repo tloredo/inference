@@ -1,0 +1,123 @@
+!    -*- f90 -*-
+! Note: the context of this file is case sensitive.
+
+python module _pcperiodic ! in 
+    interface  ! in :_pcperiodic
+        subroutine phases0(w,data,phases,ndat) ! in :_pcperiodic:_pcperiodic.f
+            real*8 intent(in) :: w
+            real*8 dimension(ndat),intent(in) :: data
+            real*8 dimension(ndat),intent(inplace),depend(ndat) :: phases
+            integer optional,intent(in),check(len(data)>=ndat),depend(data) :: ndat=len(data)
+        end subroutine phases0
+        subroutine phasesd(w,wdot,data,phases,ndat) ! in :_pcperiodic:_pcperiodic.f
+            real*8 intent(in) :: w
+            real*8 intent(in) :: wdot
+            real*8 dimension(ndat),intent(in) :: data
+            real*8 dimension(ndat),intent(inplace),depend(ndat) :: phases
+            integer optional,intent(in),check(len(data)>=ndat),depend(data) :: ndat=len(data)
+        end subroutine phasesd
+        subroutine phasesdd(w,wdot,wddot,data,phases,ndat) ! in :_pcperiodic:_pcperiodic.f
+            real*8 intent(in) :: w
+            real*8 intent(in) :: wdot
+            real*8 intent(in) :: wddot
+            real*8 dimension(ndat),intent(in) :: data
+            real*8 dimension(ndat),intent(inplace),depend(ndat) :: phases
+            integer optional,intent(in),check(len(data)>=ndat),depend(data) :: ndat=len(data)
+        end subroutine phasesdd
+        subroutine binbounds(nbins,phibins) ! in :_pcperiodic:_pcperiodic.f
+            integer optional,intent(in),check(len(phibins)>=nbins),depend(phibins) :: nbins=len(phibins)
+            real*8 dimension(nbins),intent(inplace) :: phibins
+        end subroutine binbounds
+        subroutine fbindata(ndat,phases,phi,nbins,phibins,bins,dphi) ! in :_pcperiodic:_pcperiodic.f
+            integer optional,intent(in),check(len(phases)>=ndat),depend(phases) :: ndat=len(phases)
+            real*8 dimension(ndat),intent(in) :: phases
+            real*8 intent(in) :: phi
+            integer optional,intent(in),check(len(phibins)>=nbins),depend(phibins) :: nbins=len(phibins)
+            real*8 dimension(nbins),intent(in) :: phibins
+            integer dimension(nbins),intent(inplace),depend(nbins) :: bins
+            real*8 intent(out) :: dphi
+        end subroutine fbindata
+        function limult(ndat,nbins,bins) ! in :_pcperiodic:_pcperiodic.f
+            integer intent(in) :: ndat
+            integer optional,intent(in),check(len(bins)>=nbins),depend(bins) :: nbins=len(bins)
+            integer dimension(nbins),intent(in) :: bins
+            real*8 :: limult
+        end function limult
+        function plimult(ndat,nbins,bins) ! in :_pcperiodic:_pcperiodic.f
+            integer intent(in) :: ndat
+            integer optional,intent(in),check(len(bins)>=nbins),depend(bins) :: nbins=len(bins)
+            integer dimension(nbins),intent(in) :: bins
+            real*8 :: plimult
+        end function plimult
+        function ll_wpb(ndat,nbins,bins) ! in :_pcperiodic:_pcperiodic.f
+            integer intent(in) :: ndat
+            integer optional,intent(in),check(len(bins)>=nbins),depend(bins) :: nbins=len(bins)
+            integer dimension(nbins),intent(in) :: bins
+            real*8 :: ll_wpb
+        end function ll_wpb
+        function lql_wp(ndat,nbins,bins) ! in :_pcperiodic:_pcperiodic.f
+            integer intent(in) :: ndat
+            integer optional,intent(in),check(len(bins)>=nbins),depend(bins) :: nbins=len(bins)
+            integer dimension(nbins),intent(in) :: bins
+            real*8 :: lql_wp
+        end function lql_wp
+        subroutine trap_absc(npts,nbins,absc) ! in :_pcperiodic:_pcperiodic.f
+            integer intent(in) :: npts
+            integer intent(in) :: nbins
+            real*8 dimension(npts),intent(out),depend(npts) :: absc
+        end subroutine trap_absc
+        subroutine qlw_trap(ndat,lndfac,phases,nbins,phibins,bins,npts,absc,lfac,qlike,chi2) ! in :_pcperiodic:_pcperiodic.f
+            integer optional,intent(in),check(len(phases)>=ndat),depend(phases) :: ndat=len(phases)
+            real*8 intent(in) :: lndfac
+            real*8 dimension(ndat),intent(in) :: phases
+            integer optional,intent(in),check(len(phibins)>=nbins),depend(phibins) :: nbins=len(phibins)
+            real*8 dimension(nbins),intent(inplace) :: phibins
+            integer dimension(nbins),intent(inplace),depend(nbins) :: bins
+            integer optional,intent(in),check(len(absc)>=npts),depend(absc) :: npts=len(absc)
+            real*8 dimension(npts),intent(in) :: absc
+            real*8 intent(in) :: lfac
+            real*8 intent(out) :: qlike
+            real*8 intent(out) :: chi2
+        end subroutine qlw_trap
+        subroutine qlw_exact(ndat,lndfac,phases,nbins,phibins,bins,lfac,qlike,chi2) ! in :_pcperiodic:_pcperiodic.f
+            integer optional,intent(in),check(len(phases)>=ndat),depend(phases) :: ndat=len(phases)
+            real*8 intent(in) :: lndfac
+            real*8 dimension(ndat),intent(in) :: phases
+            integer optional,intent(in),check(len(phibins)>=nbins),depend(phibins) :: nbins=len(phibins)
+            real*8 dimension(nbins),intent(inplace) :: phibins
+            integer dimension(nbins),intent(inplace),depend(nbins) :: bins
+            real*8 intent(in) :: lfac
+            real*8 intent(out) :: qlike
+            real*8 intent(out) :: chi2
+        end subroutine qlw_exact
+        function lodds(nbins,ndat,intimult,lfac) ! in :_pcperiodic:_pcperiodic.f
+            integer intent(in) :: nbins
+            integer intent(in) :: ndat
+            real*8 intent(in) :: intimult
+            real*8 intent(in) :: lfac
+            real*8 :: lodds
+        end function lodds
+        subroutine rate_wb(ndat,lndfac,phases,nbins,phibins,bins,lfac,nt,rphases,r,r2) ! in :_pcperiodic:_pcperiodic.f
+            integer optional,intent(in),check(len(phases)>=ndat),depend(phases) :: ndat=len(phases)
+            real*8 intent(in) :: lndfac
+            real*8 dimension(ndat),intent(in) :: phases
+            integer optional,intent(in),check(len(phibins)>=nbins),depend(phibins) :: nbins=len(phibins)
+            real*8 dimension(nbins),intent(inplace) :: phibins
+            integer dimension(nbins),intent(inplace),depend(nbins) :: bins
+            real*8 intent(in) :: lfac
+            integer optional,intent(in),check(len(rphases)>=nt),depend(rphases) :: nt=len(rphases)
+            real*8 dimension(nt),intent(in) :: rphases
+            real*8 dimension(nt),intent(out),depend(nt) :: r
+            real*8 dimension(nt),intent(out),depend(nt) :: r2
+        end subroutine rate_wb
+        function chisqr(ndat,nbins,bins) ! in :_pcperiodic:_pcperiodic.f
+            integer intent(in) :: ndat
+            integer optional,intent(in),check(len(bins)>=nbins),depend(bins) :: nbins=len(bins)
+            integer dimension(nbins),intent(in) :: bins
+            real*8 :: chisqr
+        end function chisqr
+    end interface 
+end python module _pcperiodic
+
+! This file was auto-generated with f2py (version:2_2119).
+! See http://cens.ioc.ee/projects/f2py2e/

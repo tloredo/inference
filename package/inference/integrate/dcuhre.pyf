@@ -1,0 +1,41 @@
+!    -*- f90 -*-
+! Note: the context of this file is case sensitive.
+
+python module __user__routines 
+    interface
+        subroutine funcs(ndim,arg,numfun,result)
+            integer ndim
+            real*8 dimension(ndim),intent(in) :: arg
+            integer numfun
+            real*8 dimension(numfun),intent(inout) :: result
+        end subroutine funcs
+    end interface
+end python module __user__routines
+python module _dcuhre ! in 
+    interface  ! in :dcuhre
+        subroutine dcuhre(ndim,numfun,a,b,minpts,maxpts,funsub,epsabs,epsrel,key,nw,restar,result,abserr,neval,ifail,work) ! in :dcuhre:dcuhre_py.f
+            integer optional,intent(in),check(len(a)>=ndim),depend(a) :: ndim=len(a)
+            integer intent(in) :: numfun
+            double precision dimension(ndim),intent(in) :: a
+            double precision dimension(ndim),intent(in),depend(ndim) :: b
+            integer intent(in) :: minpts
+            integer intent(in) :: maxpts
+            use __user__routines, funsub=>funcs
+            external funsub
+            double precision intent(in) :: epsabs
+            double precision intent(in) :: epsrel
+            integer :: key
+            integer intent(in) :: restar
+            double precision dimension(numfun),intent(in,out),depend(numfun) :: result
+            double precision dimension(numfun),intent(out),depend(numfun) :: abserr
+            integer intent(out) :: neval
+            integer intent(out) :: ifail
+            integer optional,intent(in),check(len(work)>=nw),depend(work) :: nw=len(work)
+            double precision dimension(nw),intent(inout) :: work
+            call funsub(ndim,a,numfun,result)
+        end subroutine dcuhre
+    end interface 
+end python module dcuhre
+
+! This file was auto-generated with f2py (version:2_1693).
+! See http://cens.ioc.ee/projects/f2py2e/

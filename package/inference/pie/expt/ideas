@@ -1,0 +1,120 @@
+
+class ParametricModel(AutoName):
+
+	def value(self, E, t):
+		raise NotImplementedError
+
+	def values(self, Evals, tvals):
+		raise NotImplementedError
+
+	def prior(self):
+		"""Required by BayesianInference."""
+		Should this be part of model or of inference?  Formally it is
+		part of the conditioning info defining model.
+		raise NotImplementedError
+
+
+class MyModel(ParametricModel):
+
+	x = RealParam(1.)
+	y = NonNegParam(0.)
+	z = PosParam(2.)
+	i = IntegerParam(1)
+	amps = RealVecParam()
+	
+	def value(self, E, t):
+		blah
+
+	def values(self, Evals, tvals):
+		vector version
+
+	def prior(self):
+		raise NotImplementedError
+
+
+class Inference(object):
+
+	def __init__(self, params):
+	
+	stuff to handle stepping, varying params
+	optimizer
+	infer - eval stat at pt or on grid
+	multigrid support?
+
+class ChisqrInference(Inference):
+
+	def __init__(self, data, model):
+		"""Model is a ParametricModel *instance*."""
+		self.data = data
+		self.model = model
+		Make a parameter dict
+		Copy model params to inference if no overwrites
+		Inference.__init__(self, params)
+	
+	def chisqr(self):
+	
+	def objective(self):
+		return -chisqr(self)
+
+	def min(self):
+
+
+class LikelihoodInference(Inference):
+
+	def __init__(self, data, model, loglike):
+		self.objective = self.likelihood - will this work?
+		Inference.__init__(self, params)
+
+	def likelihood(self): -- part of model?
+		raise NotImplementedError
+
+	def max(self):
+	
+	handle simple 1-d param transforms? - not really nec
+	mock data?
+
+
+class BayesianInference(Inference):
+
+	def __init__(self, data, model, loglike):
+		check that model has a prior
+		self.objective = self.posterior - will this work?
+		Inference.__init__(self, params)
+
+	def likelihood(self):
+		raise NotImplementedError
+
+	def posterior(self):
+		point or profile
+
+	def mode(self):
+	
+	def marginal(self):
+	
+	def modelLikelihood(self):
+	
+	def HPDRegionLevel(self,p):
+		return level and boundaries
+	
+	def HPDRegionLevels(self,p):
+		1-2-3sig levels
+	
+	handle simple 1-d param transforms? - careful with log steps, log param
+	handle user-spec transforms?
+
+	MCMC support
+
+
+class LogLikelihood(object):
+
+	def __init__(self, data, model):
+		"""Takes dat and a model *instance*."""
+
+	listens to model and only calculates L when needed
+	needs data to do things like eff integrals
+
+	def samplingDistn(self, otherData):
+		way to handle multiple data with same model so eff integrals 
+		not repeated?
+
+	def mockData(self):

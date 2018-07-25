@@ -1,0 +1,75 @@
+!    -*- f90 -*-
+! Note: the context of this file is case sensitive.
+
+python module _cbmlike ! in 
+    interface  ! in :_cbmlike
+        subroutine sigctp(n_on,t_on,n_off,t_off,c) ! in :_cbmlike:_cbmlike.f
+            integer intent(in) :: n_on
+            real*8 intent(in) :: t_on
+            integer intent(in) :: n_off
+            real*8 intent(in) :: t_off
+            real*8 dimension(n_on + 1),intent(out),depend(n_on) :: c
+        end subroutine sigctp
+        function psigc(s,n_on,t_on,c) ! in :_cbmlike:_cbmlike.f
+            real*8 intent(in) :: s
+            integer optional,intent(in),check((len(c)-1)>=n_on),depend(c) :: n_on=(len(c)-1)
+            real*8 intent(in) :: t_on
+            real*8 dimension(n_on + 1),intent(in) :: c
+            real*8 :: psigc
+        end function psigc
+        function slml_offset(n_on,t_on,n_off,t_off) ! in :_cbmlike:_cbmlike.f
+            integer intent(in) :: n_on
+            real*8 intent(in) :: t_on
+            integer intent(in) :: n_off
+            real*8 intent(in) :: t_off
+            real*8 :: slml_offset
+        end function slml_offset
+        subroutine vslml_offset(nc,n_on,t_on,n_off,t_off,offset) ! in :_cbmlike:_cbmlike.f
+            integer optional,intent(in),check(len(n_on)>=nc),depend(n_on) :: nc=len(n_on)
+            integer dimension(nc),intent(in) :: n_on
+            real*8 intent(in) :: t_on
+            integer dimension(nc),intent(in),depend(nc) :: n_off
+            real*8 intent(in) :: t_off
+            real*8 dimension(nc),intent(out),depend(nc) :: offset
+        end subroutine vslml_offset
+        function slmlike(s,n_on,t_on,n_off,t_off,offset,cut,nt,ierr) ! in :_cbmlike:_cbmlike.f
+            real*8 intent(in) :: s
+            integer intent(in) :: n_on
+            real*8 intent(in) :: t_on
+            integer intent(in) :: n_off
+            real*8 intent(in) :: t_off
+            real*8 intent(in) :: offset
+            real*8 intent(in) :: cut
+            integer intent(out) :: nt
+            integer intent(out) :: ierr
+            real*8 :: slmlike
+        end function slmlike
+        subroutine vslmlike(nc,s,n_on,t_on,n_off,t_off,offset,cut,slml) ! in :_cbmlike:_cbmlike.f
+            integer optional,intent(in),check(len(s)>=nc),depend(s) :: nc=len(s)
+            real*8 dimension(nc),intent(in) :: s
+            integer dimension(nc),intent(in),depend(nc) :: n_on
+            real*8 intent(in) :: t_on
+            integer dimension(nc),intent(in),depend(nc) :: n_off
+            real*8 intent(in) :: t_off
+            real*8 dimension(nc),intent(in),depend(nc) :: offset
+            real*8 intent(in) :: cut
+            real*8 dimension(nc),intent(out),depend(nc) :: slml
+        end subroutine vslmlike
+        subroutine slmliked(s,n_on,t_on,n_off,t_off,offset,cut,sll,dsll,nt,ierr) ! in :_cbmlike:_cbmlike.f
+            real*8 intent(in) :: s
+            integer intent(in) :: n_on
+            real*8 intent(in) :: t_on
+            integer intent(in) :: n_off
+            real*8 intent(in) :: t_off
+            real*8 intent(in) :: offset
+            real*8 intent(in) :: cut
+            real*8 intent(out) :: sll
+            real*8 intent(out) :: dsll
+            integer intent(out) :: nt
+            integer intent(out) :: ierr
+        end subroutine slmliked
+    end interface 
+end python module _cbmlike
+
+! This file was auto-generated with f2py (version:2_3979).
+! See http://cens.ioc.ee/projects/f2py2e/

@@ -1,0 +1,247 @@
+"""
+Rules for the whole plane with Gaussian weight function.
+
+Degree  Largest abscissa
+3       0.8
+5       1.6
+7       1.7
+9       2.3, 2.1
+11      2.8, 2.9
+13      3.0, 3.1
+
+
+Rule e2r2-3-4a, quality P
+Region: Entire space with w = exp(r^2) 
+Dimension: 2 
+Degree: 3 
+Points: 4 
+Structure: Fully symmetric 
+Rule struct: 0 1 0 0 
+Generator: [ Fully symmetric ] 
+( 1., 0., ) 
+Corresponding weight: 
+0.78539816339744830,
+
+
+Rule e2-r2-3-4b, quality P
+Region: Entire space with w = exp(r^2) 
+Dimension: 2 
+Degree: 3 
+Points: 4 
+Structure: Fully symmetric 
+Rule struct: 0 0 1 0 
+Generator: [ Fully symmetric ] 
+( 0.70710678118654752, 0.70710678118654752, ) 
+Corresponding weight: 
+0.78539816339744830,
+
+
+Rule e2r2-5-9a, quality P
+Region: Entire space with w = exp(r^2) 
+Dimension: 2 
+Degree: 5 
+Points: 9 
+Structure: Fully symmetric 
+Rule struct: 1 1 1 0 
+Generator: [ Cornerpoints of the unit-cube ] 
+( 1., 1., ) 
+Corresponding weight: 
+0.19634954084936207,
+Generator: [ Origin ] 
+( 0., 0., ) 
+Corresponding weight: 
+1.5707963267948966,
+
+Generator: [ Fully symmetric ] 
+( 1.4142135623730950, 0., ) 
+Corresponding weight: 
+0.19634954084936207,
+
+
+Rule e2r2-5-9b, quality P
+Region: Entire space with w = exp(r^2) 
+Dimension: 2 
+Degree: 5 
+Points: 9 
+Structure: Fully symmetric 
+Rule struct: 1 0 0 1 
+Generator: [ Origin ] 
+( 0., 0., ) 
+Corresponding weight: 
+1.5707963267948966,
+Generator: [ Fully symmetric ] 
+( 1.3065629648763765, 0.54119610014619698, )
+Corresponding weight:
+0.19634954084936207,
+
+
+Rule e2r2-7-12, quality P, minimum N
+Region: Entire space with w = exp(r^2) 
+Dimension: 2 
+Degree: 7 
+Points: 12 
+Structure: Fully symmetric 
+Rule struct: 0 1 2 0 
+Generator: [ Fully symmetric ]
+( 1.7320508075688772, 0., )
+Corresponding weight:
+0.087266462599716478,
+
+Generator: [ Fully symmetric ]
+( 0.53523313465963489, 0.53523313465963489, )
+Corresponding weight:
+0.66127983844512042,
+
+Generator: [ Fully symmetric ]
+( 1.4012585384440735, 1.4012585384440735, )
+Corresponding weight:
+0.036851862352611409,
+
+
+Rule e2r2-9-19a, quality P
+Region: Entire space with w = exp(r^2)
+Dimension: 2 
+Degree: 9 
+Points: 19 [ 6-gon ] 
+Structure: Circular symmetric
+i	r(i)	w(i)
+1	6	2.E0 	2.4543692606170259E-2
+2	6	1.1024690870412086E0 	3.2447320274634297E-1
+3	6	2.3752273089667399E0 	5.5031089588349583E-3
+4	1	0.E0 	1.0144726277217040E0
+
+Rule e2r2-9-21, quality P
+Region: Entire space with w = exp(r^2) 
+Dimension: 2 
+Degree: 9 
+Points: 21 
+Structure: Fully symmetric 
+Rule struct: 1 0 1 2 
+Generator: [ Origin ]
+( 0., 0., )
+Corresponding weight:
+1.0471975511965977,
+
+Generator: [ Fully symmetric ]
+( 1.5381890013208515, 1.5381890013208515, )
+Corresponding weight:
+0.012238016879947463,
+
+Generator: [ Fully symmetric ]
+( 0.43091398228826897, 1.0403183802565386, )
+Corresponding weight:
+0.24426215416421333,
+
+Generator: [ Fully symmetric ]
+( 0.54093734825794375, 2.1069972930282899, )
+Corresponding weight:
+0.011418225194962370,
+
+
+Rule e2r2-11-28a, quality P
+Region: Entire space with w = exp(r^2) 
+Dimension: 2 
+Degree: 11 
+Points: 28 
+Structure: Fully symmetric 
+Rule struct: 0 3 0 2 
+Generator: [ Fully symmetric ]
+( 2.7578163962570077, 0., )
+Corresponding weight:
+#10 ^ -4 x 8.1766458176754177,
+8.1766458176754177E-4,
+
+Generator: [ Fully symmetric ]
+( 1.7320508075688772, 0., )
+Corresponding weight:
+0.043633231299858239,
+
+Generator: [ Fully symmetric ]
+( 0.62805153015975584, 0., )
+Corresponding weight:
+0.53732552144981741,
+
+Generator: [ Fully symmetric ]
+( 1.2247448713915890, 2.1213203435596425, )
+Corresponding weight:
+#10 ^ -3 x 3.6361026083215199,
+3.6361026083215199E-3,
+
+Generator: [ Fully symmetric ]
+( 0.70710678118654752, 1.2247448713915890, )
+Corresponding weight:
+0.098174770424681038,
+
+
+
+Rule e2r2-11-28c, quality P
+Region: Entire space with w = exp(r^2)
+Dimension: 2 
+Degree: 11 
+Points: 28 [ 4-gon ] 
+Structure: Circular symmetric 
+i	r(i)	w(i)
+1	8	2.2360679774997896E0 	7.5398223686155037E-3
+2	4	1.3765979318520745E0 	1.5137267598023796E-1
+3	4	2.6825150931410771E0 	1.0294743039068897E-3
+4	4	6.1791116665497929E-1 	5.2680403237854616E-1
+5	4	1.5261898960020960E0 	9.0730267409198283E-2
+6	4	2.9220203379272203E0 	3.8206858832799763E-4
+
+
+Rule e2r2-13-36, quality P
+Region: Entire space with w = exp(r^2) 
+Dimension: 2 
+Degree: 13 
+Points: 36 
+Structure: Fully symmetric 
+Rule struct: 0 3 2 2 
+Generator: [ Fully symmetric ]
+( 2.3589322619806809, 0., )
+Corresponding weight:
+10 ^ -3 x 4.0553465034375560,
+
+Generator: [ Fully symmetric ]
+( 1.3764866796963506, 0., )
+Corresponding weight:
+0.11962714138576389,
+
+Generator: [ Fully symmetric ]
+( 0.54608441525854036, 0., )
+Corresponding weight:
+0.44548945821552661,
+
+Generator: [ Fully symmetric ]
+( 1.9855313399178849, 1.9855313399178849, )
+Corresponding weight:
+10 ^ -4 x 5.0912352191625667,
+
+Generator: [ Fully symmetric ]
+( 0.84624998844801990, 0.84624998844801990, )
+Corresponding weight:
+0.18135069243713553,
+
+Generator: [ Fully symmetric ]
+( 0.99625342617276321, 3.0304360653685791, )
+Corresponding weight:
+10 ^ -5 x 7.5744694043053037,
+
+Generator: [ Fully symmetric ]
+( 0.93182402277619985, 1.7792467389053190, )
+Corresponding weight:
+0.017107455972791175,
+
+
+Rule e2r2-13-41, quality P
+Region: Entire space with w = exp(r^2)
+Dimension: 2 
+Degree: 13 
+Points: 41 [ 10-gon ] 
+Structure: Circular symmetric
+i	r(i)	w(i)
+1	10	2.4494897427831780E0 	2.4240684055476799E-3
+2	10	9.2897653516474092E-1 	1.9404444552734862E-1
+3	10	1.7162505238049738E0 	4.4486553170629952E-2
+4	10	3.0727002354041088E0 	1.1853582819051242E-4
+5	1	0.E0 	7.3085662427262551E-1
+"""

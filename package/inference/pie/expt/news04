@@ -1,0 +1,167 @@
+
+Hi folks-
+
+I'd like to have objects with members that return values when accessed
+by name, but the members must also have methods that can manipulate the
+values and store additional state.  This is a simplified version of the
+direction I'm currently going using descriptors:
+
+class Parameter(object):
+    """Insert named descriptor into calling instance."""
+    def __init__(self, name):
+        self.name = name + 'val'
+    def __get__(self, inst, owner):
+        # print 'getting val'
+        return getattr(inst, self.name)
+    def __set__(self, inst, val):
+        # print 'setting val'
+        setattr(inst, self.name, val)
+    def __del__(self,inst):
+        del inst.value
+
+
+class test(object):
+    x = Parameter('x')
+    y = Parameter('y')
+
+Using this in the interpreter, one can access x by name to set and get
+values.
+
+>>> a = test()
+>>> a.x = 'ab cd'
+>>> a.x
+'ab cd'
+
+You can obviously also access methods of the string object assigned to
+a.x:
+
+>>> a.x.split()
+['ab', 'cd']
+
+But what if I wanted to have methods of my own that access the value of
+a.x and store additional state?  That is, I want
+
+a.x
+
+to return a value, but I want
+
+a.x.mymeth(args)
+
+to call a method that has access to the a.x value, and that stores
+additional state about a.x in the a instance.
+
+A possible solution that occurs to me is to create a new string object
+that inherits from str but adds my own methods and state:
+
+class mystr(str):
+	blah...
+
+and then redefine __set__ to insert an instance of this into the
+Parameter instance.  But this seems to me to create a lot of overhead
+for the many times I'll just want to get the value for a.x.  Is there
+some other way to have "a.x" by itself return a value, but have "a.x"
+in "a.x.mymeth" reference an object so that its "mymeth" method gets
+called?
+
+Thanks,
+Tom
+
+PS:  In case being more concrete helps, an example would be that
+Parameter stores the value of a float parameter in a model, so a.x
+should return a float value (as quickly as possible---this will be
+accessed a lot).  But I'd like to set allowed ranges to such values,
+define grids they'll be stepped on, store whether they can be maximized
+or integrated over in a calculation, etc..  So I want to be able to
+call a.x.range(1,10) and have it store 1 and 10 as the range for future
+values of a.x, have a.x.vary() set a variable saying it can be varied
+in a fit, etc., and do this having multiple Parameter instances
+in a class, and multiple instances of that class.
+==============================
+From: Robert Brewer (fumanchu@amor.org)
+Subject: RE: How to give a descriptor method access?
+Newsgroups: comp.lang.python
+Date: 2004-04-09 12:01:02 PST
+
+Tom Loredo wrote:
+> I'd like to have objects with members that return values when accessed
+> by name, but the members must also have methods that can 
+> manipulate the
+> values and store additional state.
+
+[Sorry, Tom, about getting cut off before--dang Outlook.]
+
+If the additional state applies to all instances of the class, a common
+approach is to return or modify the descriptor itself at the class
+level:
+
+    def   get  (self, inst, owner):
+        if inst is None:
+            return self
+        else:
+            return getattr(inst, self.name)
+
+...you can then add attributes to the descriptor. 'inst' will be None
+when the descriptor is called on the class instead of on an instance.
+
+> PS:  In case being more concrete helps, an example would be that
+> Parameter stores the value of a float parameter in a model, so a.x
+> should return a float value (as quickly as possible---this will be
+> accessed a lot).  But I'd like to set allowed ranges to such values,
+> define grids they'll be stepped on, store whether they can be 
+> maximized
+> or integrated over in a calculation, etc..  So I want to be able to
+> call a.x.range(1,10) and have it store 1 and 10 as the range 
+> for future
+> values of a.x, have a.x.vary() set a variable saying it can be varied
+> in a fit, etc., and do this having multiple Parameter instances
+> in a class, and multiple instances of that class.
+
+Descriptors IMO aren't really designed for that--they're more of a
+class-level concept. You can of course, store per-instance data within
+the descriptor:
+
+class Parameter(object):
+    """Insert named descriptor into calling instance."""
+    def   init  (self, name):
+        self.name = name + 'val'
+        self.ranges = {}
+
+    def   set  (self, inst, val):
+        # print 'setting val'
+        setattr(inst, self.name, val)
+        self.ranges[inst] = (1, 10)
+
+...but 1) that gets ugly quickly, and 2) the easiest way to beautify it
+is to put that "ranges" dictionary back into the owner class, and
+3)..then why bother passing it through the descriptor? ;)
+
+I think the clean solution to your particular example would be to make x
+and y more robust classes, probably subclassed from the appropriate
+type:
+
+class Parameter(int):
+    def   init  (self, value, range=(1,10)):
+        int.  init  (self, value)
+        self.range = range
+
+class test(object):
+    x = Parameter(3)
+    y = Parameter(6, (0, 25))
+
+
+...in which case (untested):
+
+>>> test.x 3
+>>> test.x.range (1, 10)
+>>> test.y 6
+>>> test.y.range
+(0, 25)
+
+
+...something like that. :)
+
+
+Robert Brewer
+MIS
+Amor Ministries
+fumanchu@amor.org

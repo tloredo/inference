@@ -1,0 +1,368 @@
+<html><head>
+<!-- ViewCVS -- http://viewcvs.sourceforge.net/
+by Greg Stein -- mailto:gstein@lyra.org
+-->
+
+<title>PEAK/src/peak/binding/once.py - view - 1.22</title>
+</head>
+<body bgcolor="#eeeeee">
+<table width="100%" border=0 cellspacing=0 cellpadding=1 bgcolor="#9999ee">
+<tr valign=bottom>
+<td>
+<a href="once.py#rev1.22">
+<img src="/icons/small/back.gif" alt="(file)" border=0 width=16 height=16>
+</a>
+<b>Return to
+<a href="once.py#rev1.22">once.py</a>
+CVS log</b>
+<img src="/icons/small/text.gif" alt="(file)" border=0 width=16 height=16>
+</td>
+<td align=right>
+<img src="/icons/small/dir.gif" alt="(dir)" border=0 width=16 height=16>
+<b>Up to <a href="/#dirlist">[Development]</a> / <a href="/PEAK/#dirlist">PEAK</a> / <a href="/PEAK/src/#dirlist">src</a> / <a href="/PEAK/src/peak/#dirlist">peak</a> / <a href="/PEAK/src/peak/binding/#dirlist">binding</a></b>
+</td>
+</tr>
+</table>
+
+<hr noshade>
+<table width="100%"><tr><td bgcolor="#ffffff">
+File: <a href="/#dirlist">[Development]</a> / <a href="/PEAK/#dirlist">PEAK</a> / <a href="/PEAK/src/#dirlist">src</a> / <a href="/PEAK/src/peak/#dirlist">peak</a> / <a href="/PEAK/src/peak/binding/#dirlist">binding</a> / <a href="/PEAK/src/peak/binding/once.py#dirlist">once.py</a>
+(<a href="/*checkout*/PEAK/src/peak/binding/once.py?rev=1.22" target="cvs_checkout"
+onClick="window.open('about:blank','cvs_checkout',
+'resizeable=1,scrollbars=1');"
+><b>download</b></a>)
+
+/
+(<a href="/*checkout*/PEAK/src/peak/binding/once.py?rev=1.22&content-type=text/plain" target="cvs_checkout"
+onClick="window.open('about:blank', 'cvs_checkout',
+'resizeable=1,scrollbars=1')"><b>as text</b></a>)
+
+<br>
+
+Revision: <b>1.22</b>,
+<i>Sat Nov  9 22:06:07 2002 UTC</i> (16 months ago) by <i>pje</i>
+
+<br>Branch: <b>MAIN</b>
+
+
+
+
+
+<br>Changes since <b>1.21: +11 -11 lines</b>
+
+
+
+<pre>Components now support names and paths:
+
+* Objects created by naming system lookup, binding.New(), or
+  AutoCreated, can all now automatically receive information
+  about their name as well as their parent component.
+
+* binding.getComponentName() gets an object's name or 'None'
+
+* binding.getComponentPath(c, relativeTo=None) gets an object's
+  path from its root component, or as a relative path from
+  'relativeTo' (assumes 'relativeTo' is a parent of 'c').
+  Unknown names are rendered as '*' in the path.
+
+* Added 'binding.Acquire' after all.
+
+* Improved management of _p_jar/_p_oid by model.Element, using
+  _p_jar as the parent component, and _p_oid as the component
+  name for elements.
+
+* Added unit tests for name and path support.
+</pre>
+
+</td></tr></table>
+<hr noshade>
+<PRE>
+<B><FONT COLOR="#BC8F8F">&quot;&quot;&quot;'Once' objects and classes&quot;&quot;&quot;</FONT></B>
+
+<B><FONT COLOR="#A020F0">from</FONT></B> peak.api <B><FONT COLOR="#A020F0">import</FONT></B> NOT_FOUND
+<B><FONT COLOR="#A020F0">from</FONT></B> peak.util.EigenData <B><FONT COLOR="#A020F0">import</FONT></B> EigenRegistry
+<B><FONT COLOR="#A020F0">from</FONT></B> peak.util.imports <B><FONT COLOR="#A020F0">import</FONT></B> importObject
+<B><FONT COLOR="#A020F0">from</FONT></B> interfaces <B><FONT COLOR="#A020F0">import</FONT></B> IBindingFactory
+
+__all__ = [
+    <B><FONT COLOR="#BC8F8F">'Once'</FONT></B>, <B><FONT COLOR="#BC8F8F">'New'</FONT></B>, <B><FONT COLOR="#BC8F8F">'Copy'</FONT></B>, <B><FONT COLOR="#BC8F8F">'OnceClass'</FONT></B>, <B><FONT COLOR="#BC8F8F">'ActiveDescriptors'</FONT></B>,
+    <B><FONT COLOR="#BC8F8F">'ActiveDescriptor'</FONT></B>,
+]
+
+
+<B><FONT COLOR="#A020F0">class</FONT></B> ActiveDescriptors(type):
+
+    <B><FONT COLOR="#BC8F8F">&quot;&quot;&quot;Type which gives its descriptors a chance to find out their names&quot;&quot;&quot;</FONT></B>
+    
+    <B><FONT COLOR="#A020F0">def</FONT></B> <B><FONT COLOR="#0000FF">__init__</FONT></B>(klass, name, bases, dict):
+
+        <B><FONT COLOR="#A020F0">for</FONT></B> k,v <B><FONT COLOR="#A020F0">in</FONT></B> dict.items():
+            <B><FONT COLOR="#A020F0">if</FONT></B> isinstance(v,ActiveDescriptor):
+                v.activate(klass,k)
+
+        super(ActiveDescriptors,klass).__init__(name,bases,dict)
+
+
+<B><FONT COLOR="#A020F0">class</FONT></B> ActiveDescriptor(object):
+
+    <B><FONT COLOR="#BC8F8F">&quot;&quot;&quot;This is just a (simpler sort of) interface assertion class&quot;&quot;&quot;</FONT></B> 
+
+    <B><FONT COLOR="#A020F0">def</FONT></B> <B><FONT COLOR="#0000FF">activate</FONT></B>(self,klass,attrName):
+        <B><FONT COLOR="#BC8F8F">&quot;&quot;&quot;Informs the descriptor that it is in 'klass' with name 'attrName'&quot;&quot;&quot;</FONT></B>
+        <B><FONT COLOR="#A020F0">raise</FONT></B> NotImplementedError
+
+
+
+
+
+
+
+
+<B><FONT COLOR="#A020F0">def</FONT></B> <B><FONT COLOR="#0000FF">New</FONT></B>(obtype, bindToOwner=None, name=None, provides=None, doc=None):
+
+    <B><FONT COLOR="#BC8F8F">&quot;&quot;&quot;One-time binding of a new instance of 'obtype'
+
+    Usage::
+
+        class someClass(binding.Component):
+
+            myDictAttr = binding.New(dict)
+
+            myListAttr = binding.New(list)
+
+    The 'myDictAttr' and 'myListAttr' will become empty instance
+    attributes on their first access attempt from an instance of
+    'someClass'.
+    
+    This is basically syntactic sugar for 'Once' to create an empty
+    instance of a type.  The same rules apply as for 'Once' about
+    whether the 'name' parameter is required.  (That is, you need it if you're
+    using this in a class whose metaclass doesn't support ActiveDescriptors,
+    such as when you're not deriving from a standard PEAK base class.)
+    &quot;&quot;&quot;</FONT></B>
+
+    <B><FONT COLOR="#A020F0">def</FONT></B> <B><FONT COLOR="#0000FF">mkNew</FONT></B>(s,d,a):
+        factory = importObject(obtype)
+
+        <B><FONT COLOR="#A020F0">if</FONT></B> bindToOwner <B><FONT COLOR="#A020F0">or</FONT></B> (
+            bindToOwner <B><FONT COLOR="#A020F0">is</FONT></B> None <B><FONT COLOR="#A020F0">and</FONT></B> IBindingFactory.isImplementedBy(factory)
+        ):
+            <B><FONT COLOR="#A020F0">return</FONT></B> factory(s,a)
+        <B><FONT COLOR="#A020F0">else</FONT></B>:
+            <B><FONT COLOR="#A020F0">return</FONT></B> factory()
+
+    <B><FONT COLOR="#A020F0">return</FONT></B> Once( mkNew, name, provides, doc)
+
+
+
+
+
+
+
+<B><FONT COLOR="#A020F0">def</FONT></B> <B><FONT COLOR="#0000FF">Copy</FONT></B>(obj, name=None, provides=None, doc=None):
+
+    <B><FONT COLOR="#BC8F8F">&quot;&quot;&quot;One-time binding of a copy of 'obj'
+
+    Usage::
+
+        class someClass(binding.Component):
+
+            myDictAttr = binding.Copy( {'foo': 2} )
+            
+            myListAttr = binding.Copy( [1,2,'buckle your shoe'] )
+
+    The 'myDictAttr' and 'myListAttr' will become per-instance copies of the
+    supplied initial values on the first attempt to access them from an
+    instance of 'someClass'.
+
+    This is basically syntactic sugar for 'Once' to create copies using
+    the Python 'copy.copy()' function.  The same rules apply as for
+    'Once' about whether the 'name' parameter is required.  (That is, you need
+    it if you're using this in a class whose metaclass doesn't support
+    ActiveDescriptors, such as when you're not deriving from a standard PEAK
+    base class.)
+    &quot;&quot;&quot;</FONT></B>
+    
+
+    <B><FONT COLOR="#A020F0">from</FONT></B> copy <B><FONT COLOR="#A020F0">import</FONT></B> copy
+    <B><FONT COLOR="#A020F0">return</FONT></B> Once( (<B><FONT COLOR="#A020F0">lambda</FONT></B> s,d,a: copy(obj)), name, provides, doc)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<B><FONT COLOR="#A020F0">class</FONT></B> Once(ActiveDescriptor):
+
+    <B><FONT COLOR="#BC8F8F">&quot;&quot;&quot;One-time Properties
+    
+        Usage ('Once(callable,name)')::
+
+            class someClass(object):
+
+                def anAttr(self, __dict__, attrName):
+                    return self.foo * self.bar
+
+                anAttr = Once(anAttr, 'anAttr')
+
+        When 'anInstanceOfSomeClass.anAttr' is accessed for the first time,
+        the 'anAttr' function will be called, and saved in the instance
+        dictionary.  Subsequent access to the attribute will return the
+        cached value.  Deleting the attribute will cause it to be computed
+        again on the next access.
+
+        The 'name' argument is optional.  If not supplied, it will default
+        to the '__name__' of the supplied callable.  (So in the usage
+        example above, it could have been omitted.)
+
+        'Once' is a 'binding.meta.ActiveDescriptor', so if you place an
+        instance of it in a class which supports descriptor naming (i.e.,
+        has a metaclass derived from 'binding.meta.ActiveDescriptors'), it will
+        automatically know the correct attribute name to use in the instance
+        dictionary, even if it is different than the supplied name or name of
+        the supplied callable.  However, if you place a 'Once' instance in a
+        class which does *not* support descriptor naming, and you did not
+        supply a valid name, attribute access will fail with a 'TypeError'.
+    &quot;&quot;&quot;</FONT></B>
+
+    attrName = None
+    _provides = None
+    
+    <B><FONT COLOR="#A020F0">def</FONT></B> <B><FONT COLOR="#0000FF">__init__</FONT></B>(self, func, name=None, provides=None, doc=None):
+        self.computeValue = func
+        self.attrName = self.__name__ = name <B><FONT COLOR="#A020F0">or</FONT></B> getattr(func,<B><FONT COLOR="#BC8F8F">'__name__'</FONT></B>,None)
+        self._provides = provides; self.__doc__ = doc <B><FONT COLOR="#A020F0">or</FONT></B> getattr(func,<B><FONT COLOR="#BC8F8F">'__doc__'</FONT></B>,<B><FONT COLOR="#BC8F8F">''</FONT></B>)
+
+    <B><FONT COLOR="#A020F0">def</FONT></B> <B><FONT COLOR="#0000FF">__get__</FONT></B>(self, obj, typ=None):
+    
+        <B><FONT COLOR="#BC8F8F">&quot;&quot;&quot;Compute the attribute value and cache it
+
+            Note: fails if attribute name not supplied or doesn't reference
+            this descriptor!
+        &quot;&quot;&quot;</FONT></B>
+        <B><FONT COLOR="#A020F0">if</FONT></B> obj <B><FONT COLOR="#A020F0">is</FONT></B> None: <B><FONT COLOR="#A020F0">return</FONT></B> self
+
+        d = obj.__dict__
+        n = self.attrName
+
+        <B><FONT COLOR="#A020F0">if</FONT></B> <B><FONT COLOR="#A020F0">not</FONT></B> n <B><FONT COLOR="#A020F0">or</FONT></B> getattr(obj.__class__,n,None) <B><FONT COLOR="#A020F0">is</FONT></B> <B><FONT COLOR="#A020F0">not</FONT></B> self:
+            self.usageError()
+
+        d[n] = NOT_FOUND    <I><FONT COLOR="#B22222"># recursion guard
+</FONT></I>
+        try:
+            d[n] = value = self.computeValue(obj, d, n)
+        <B><FONT COLOR="#A020F0">except</FONT></B>:
+            del d[n]
+            <B><FONT COLOR="#A020F0">raise</FONT></B>
+            
+        <B><FONT COLOR="#A020F0">return</FONT></B> value
+
+
+    <B><FONT COLOR="#A020F0">def</FONT></B> <B><FONT COLOR="#0000FF">usageError</FONT></B>(self):            
+        <B><FONT COLOR="#A020F0">raise</FONT></B> TypeError(
+            <B><FONT COLOR="#BC8F8F">&quot;%s was used in a type which does not support ActiveDescriptors,&quot;</FONT></B>
+            <B><FONT COLOR="#BC8F8F">&quot; but a valid attribute name was not supplied&quot;</FONT></B>
+            % self
+        )
+
+
+    <B><FONT COLOR="#A020F0">def</FONT></B> <B><FONT COLOR="#0000FF">computeValue</FONT></B>(self, obj, instanceDict, attrName):
+        <B><FONT COLOR="#A020F0">raise</FONT></B> NotImplementedError
+
+
+
+
+
+    <B><FONT COLOR="#A020F0">def</FONT></B> <B><FONT COLOR="#0000FF">activate</FONT></B>(self,klass,attrName):
+
+        <B><FONT COLOR="#A020F0">if</FONT></B> attrName !=self.attrName:
+            setattr(klass, attrName, self._copyWithName(attrName))
+
+        <B><FONT COLOR="#A020F0">if</FONT></B> self._provides <B><FONT COLOR="#A020F0">is</FONT></B> <B><FONT COLOR="#A020F0">not</FONT></B> None:
+
+            <B><FONT COLOR="#A020F0">if</FONT></B> <B><FONT COLOR="#A020F0">not</FONT></B> klass.__dict__.has_key(<B><FONT COLOR="#BC8F8F">'__class_provides__'</FONT></B>):
+
+                cp = EigenRegistry()
+
+                <B><FONT COLOR="#A020F0">for</FONT></B> c <B><FONT COLOR="#A020F0">in</FONT></B> klass.__mro__:
+                    <B><FONT COLOR="#A020F0">if</FONT></B> c.__dict__.has_key(<B><FONT COLOR="#BC8F8F">'__class_provides__'</FONT></B>):
+                        cp.update(c.__class_provides__)
+
+                klass.__class_provides__ = cp
+
+            klass.__class_provides__.register(self._provides,attrName)
+
+
+    <B><FONT COLOR="#A020F0">def</FONT></B> <B><FONT COLOR="#0000FF">_copyWithName</FONT></B>(self, attrName):
+
+        <B><FONT COLOR="#A020F0">from</FONT></B> copy <B><FONT COLOR="#A020F0">import</FONT></B> copy
+        newOb = copy(self)
+
+        newOb.attrName = attrName
+        <B><FONT COLOR="#A020F0">return</FONT></B> newOb
+        
+
+
+
+
+
+
+
+
+
+
+
+
+
+<B><FONT COLOR="#A020F0">class</FONT></B> OnceClass(Once, type):
+
+    <B><FONT COLOR="#BC8F8F">&quot;&quot;&quot;A variation on Once that can be used as a metaclass
+
+        Usage::
+
+            class outer(object):
+
+                class inner(object):
+                    __metaclass__ = OnceClass
+
+                    def __init__(self, obj, instDict, attrName):
+                        ...
+
+        When 'anOuterInstance.inner' is accessed, an instance of
+        'inner' will be created and cached in the instance dictionary,
+        as per 'Once'.  See 'Once' for more details on the mechanics.
+        The class name will serve as a default attribute name.
+    &quot;&quot;&quot;</FONT></B>
+
+    <B><FONT COLOR="#A020F0">def</FONT></B> <B><FONT COLOR="#0000FF">__init__</FONT></B>(klass, name, bases, dict):
+        <I><FONT COLOR="#B22222"># Hack to bypass Once.__init__, which is the wrong signature!
+</FONT></I>        super(Once,klass).__init__(name,bases,dict)
+        klass.attrName = name
+
+
+    <B><FONT COLOR="#A020F0">def</FONT></B> <B><FONT COLOR="#0000FF">computeValue</FONT></B>(self, *args):
+        <B><FONT COLOR="#A020F0">return</FONT></B> self(*args)
+
+
+    <B><FONT COLOR="#A020F0">def</FONT></B> <B><FONT COLOR="#0000FF">_copyWithName</FONT></B>(self,attrName):
+        <B><FONT COLOR="#A020F0">return</FONT></B> Once(self.computeValue, attrName)
+
+
+</PRE>
+
+<hr noshade>
+<table width="100%" border=0 cellpadding=0 cellspacing=0><tr>
+<td align=left><address><a href="mailto:cvs-admin@eby-sarna.com">cvs-admin@eby-sarna.com</a></address></td>
+<td align=right>
+Powered by<br><a href="http://viewcvs.sourceforge.net/">ViewCVS 0.9.2</a>
+</td></tr></table>
+</body></html>

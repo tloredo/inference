@@ -1,0 +1,55 @@
+!    -*- f90 -*-
+! Note: the context of this file is case sensitive.
+
+python module pk_scales__user__routines 
+    interface pk_scales_user_interface 
+        function f(n,x) result (fnew) ! in :ofinfomodule:ofinfomodule.f:pk_scales:unknown_interface
+            intent(in) f
+            integer optional,intent(in),check(len(x)>=n),depend(x) :: n=len(x)
+            real*8 dimension(n),intent(in) :: x
+            real*8 :: fnew
+        end function f
+    end interface pk_scales_user_interface
+end python module pk_scales__user__routines
+python module ninfol__user__routines 
+    interface ninfol_user_interface 
+        function lf(n,mu) ! in :ofinfomodule:ofinfomodule.f:ninfol:unknown_interface
+            intent(in) lf
+            integer optional,intent(in),check(len(mu)>=n),depend(mu) :: n=len(mu)
+            real*8 dimension(n),intent(in) :: mu
+            real*8 intent(in) :: lf
+        end function lf
+    end interface ninfol_user_interface
+end python module ninfol__user__routines
+python module ofinfomodule ! in 
+    interface  ! in :ofinfomodule
+        subroutine pk_scales(n,f,x,fmax,df,dx,maxnr,tol,status) ! in :ofinfomodule:ofinfomodule.f
+            use pk_scales__user__routines
+            integer optional,intent(in),check(len(x)>=n),depend(x) :: n=len(x)
+            external f
+            real*8 dimension(n),intent(in) :: x
+            real*8 intent(in) :: fmax
+            real*8 intent(in) :: df
+            real*8 dimension(n),intent(in,out),depend(n) :: dx
+            integer :: maxnr
+            real*8 :: tol
+            integer intent(out) :: status
+        end subroutine pk_scales
+        subroutine ninfol(lf,n,mu,lfmax,dp,iter,info,ierr,h,d2f) ! in :ofinfomodule:ofinfomodule.f
+            use ninfol__user__routines
+            external lf
+            integer optional,intent(in),check(len(mu)>=n),depend(mu) :: n=len(mu)
+            real*8 dimension(n),intent(in) :: mu
+            real*8 intent(in) :: lfmax
+            real*8 dimension(n),intent(in),depend(n) :: dp
+            integer intent(in) :: iter
+            real*8 dimension(n,n),intent(inout),depend(n,n) :: info
+            real*8 dimension(n,n),intent(inout),depend(n,n) :: ierr
+            real*8 dimension(iter),intent(cache,hide),depend(iter) :: h
+            real*8 dimension(iter),intent(cache,hide),depend(iter) :: d2f
+        end subroutine ninfol
+    end interface 
+end python module ofinfomodule
+
+! This file was auto-generated with f2py (version:2_1693).
+! See http://cens.ioc.ee/projects/f2py2e/
