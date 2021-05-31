@@ -3,9 +3,10 @@ obsinfo - Tools for calculating the observed Fisher information matrix
 from log-likelihood functions.
 """
 
-from _obsinfo import pk_scales, ninfol
+from ._obsinfo import pk_scales, ninfol
 
 __all__ = ['dllsteps', 'obsinfo']
+
 
 def dllsteps(loglike, mle, guess, dll=1., maxll=None, maxiter=20, tol=0.01):
     """
@@ -57,7 +58,7 @@ def obsinfo(loglike, mle, deltas, maxll=None, niter=2):
                 refine the derivative calculations; if niter=0, derivatives
                 from simple 2nd differences are reported, and 
                 err = an array of zeros
-    
+
     For each iteration, the step sizes are shrunk by 1/sqrt(2).
     """
     # Note ninfol interprets # of iterations as # of sets of 2nd differences
