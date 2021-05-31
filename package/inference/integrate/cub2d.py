@@ -76,10 +76,10 @@ from numpy import pi, sqrt, array
 
 # Import rules auto-generated from ECF web output; currently these are e2 rules.
 # Rules on the square are simple and coded directly in this file.
-from _cub2d_auto import rule_dict
+from ._cub2d_auto import rule_dict
 
-__all__ = ['rule_dict', 'NormWtCub2D', 'rect3d4pt', 'rect7d12pt', 
-    'square1d4pt', 'square3d4pt', 'square7d12pt']
+__all__ = ['rule_dict', 'NormWtCub2D', 'rect3d4pt', 'rect7d12pt',
+           'square1d4pt', 'square3d4pt', 'square7d12pt']
 
 
 #==============================================================================
@@ -89,7 +89,7 @@ __all__ = ['rule_dict', 'NormWtCub2D', 'rect3d4pt', 'rect7d12pt',
 rt2 = sqrt(2)
 
 # Cool's rule c2-3-4a abscissas:
-gen_3d4pt = ( 0.816496580927726032732428024901963, 0. )
+gen_3d4pt = (0.816496580927726032732428024901963, 0.)
 
 # Cool's rule c2-7-12a abscissas & weights:
 gen_7d12pt = [
@@ -105,7 +105,7 @@ gen_7d12pt = [
 class NormWtCub2D(object):
     """
     2-D cubature using a normal distribution weight function.
-    
+
     The default rule is 'e2r2_7_12' of degree 7 with 12 nodes.  For other
     choices, examine the keys of the dictionary rule_dict in this module.
     See the module documentation for details about the rules.
@@ -144,6 +144,7 @@ def rect3d4pt(f, xrange, yrange):
     cub = f(px+xm,ym) + f(-px+xm,ym) + f(xm,py+ym) + f(xm,-py+ym)
     return cub*hx*hy
 
+
 def rect7d12pt(f, xrange, yrange):
     """
     Cubature of f(x,y) on a rectangle, of degree 7, using 12 points.
@@ -178,7 +179,7 @@ def square1d4pt(f):
     """
     Cubature of f(x,y) on the unit [-1,1] square, of degree 1, using 4 points.
     All nodes are on the corners.
-    
+
     This uses rule c2-1-4 from Ronald Cool's on-line Encyclopedia of
     Cubature Formulas.  This is a trivial rule that simply sums the
     corner contributions with unit weights.
@@ -220,6 +221,7 @@ def square3d4pt(f):
     p = gen_3d4pt[0]
     return f(p,0.) + f(-p,0.) + f(0.,p) + f(0.,-p)
 
+
 def square7d12pt(f):
     """
     Cubature of f(x,y) on the unit [-1,1] square, of degree 7, using 12 points.
@@ -227,7 +229,7 @@ def square7d12pt(f):
 
     This uses rule c2-7-12a from Ronald Cool's on-line Encyclopedia of
     Cubature Formulas.
-    
+
     Region: Cube 
     Dimension: 2 
     Degree: 7 
@@ -236,12 +238,12 @@ def square7d12pt(f):
     Rule struct: 0 1 2 0 
     The points are the common zeros of the orthogonal polynomials
     P4,1 = x3y - xy3
-    
+
     P4,2 = x4 - y4 - 6/7x2 + 6/7y2
-    
+
     P4,3 = x4 + 54/55x2y2 + y4 - 456/385x2 - 456/385y2 + 108/385
-    
-    
+
+
     Generator: [ Fully symmetric ] 
     ( 0.925820099772551461566566776583999, 0., ) 
     Corresponding weight: 
@@ -250,7 +252,7 @@ def square7d12pt(f):
     ( 0.380554433208315656379106359086394, 0.380554433208315656379106359086394, ) 
     Corresponding weight: 
     0.520592916667394457139919432046731,
-    
+
     Generator: [ Fully symmetric ] 
     ( 0.805979782918598743707856181350744, 0.805979782918598743707856181350744, ) 
     Corresponding weight: 
