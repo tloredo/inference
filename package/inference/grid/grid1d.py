@@ -2,11 +2,11 @@
 # Adapted from RefinedGrid1D to InferenceGrid1: 15 Mar 2001
 # Last mod: 15 Mar 2001
 
-from math import sqrt, log, floor, ceil, pi
-from string import lower
+from numpy import sqrt, log, floor, ceil, pi
 from numpy import fromfunction, array, zeros, sum, exp, clip, shape
-from types import TupleType, ListType
-import utils
+# from types import TupleType, ListType
+
+from .. import utils
 
 __all__ = ['Grid1D', 'Lin', 'Log']
 
@@ -21,10 +21,11 @@ def IsPeak(y):
 
     return (y[0] < y[1] > y[2]) or (y[0] < y[1] == y[2])
 
+
 def PeakParams(x, y):
     """Given log f(x) at three points, estimate the parameters of a 
     Gaussian function through those points, (A, mean, sig).
-    
+
     This generalizes the regular grid algorithm of H. J. Sanchez,
     Comp. in Phys., Jul/Aug 1991, 407."""
 
@@ -47,7 +48,6 @@ def PeakParams(x, y):
 class LabeledMaxList:
     """Maintain a sorted list of a fixed number of maximum values of
     a quantity, along with labels of the maxima."""
- 
 
     def __init__(self, nmax=None, dynrange=None):
         """Sets the length of the list of labeled maxima."""
@@ -85,16 +85,16 @@ class LabeledMaxList:
         if (hi == self.nmax) and (q <= self.list[-1][0]):
             return
 
-        # We'll do this by bisection, as in the bisect.py library module. 
+        # We'll do this by bisection, as in the bisect.py library module.
         lo = 0
         while lo < hi:
-            mid = (lo+hi)/2
+            mid = (lo+hi)//2
             if q > self.list[mid][0]:
                 hi = mid
             else:
                 lo = mid+1
         self.list.insert(lo, (q, label))
-        if self.nmax != None:
+        if self.nmax is not None:
             if len(self.list) > self.nmax:
                 del self.list[self.nmax]
 
@@ -127,33 +127,34 @@ class LabeledMaxList:
 class BasicInterval:
     """A basic, positively-directed (closed) interval of equispaced samples."""
 
-    def __init__(self, lo, hi, n, type="linear"):
+    def __init__(self, lo, hi, n, stype="linear"):
         """Define the interval and sample density.
         This assumes the direction has been verified in the calling code."""
 
         self.lo = lo
         self.hi = hi
-        if (n <= 1): raise ValueError("Need n > 1!")
+        if (n <= 1):
+            raise ValueError("Need n > 1!")
         self.n = n
-        if type == "lin" or type == "linear":
+        if stype == "lin" or stype == "linear":
             self.step = (hi-lo) / (n-1.)
             self.fac = None
             self.isLin = 1
-        elif type == "log" or type == "logarithmic":
+        elif stype == "log" or stype == "logarithmic":
             if lo*hi <= 0.:
                 raise ValueError("Bad bounds for log interval!")
             self.step = log(hi/lo) / (n-1.)
             self.fac = exp(self.step)
             self.isLin = 0
         else:
-            raise ValueError("Interval type must be Lin or Log!")
+            raise ValueError("Interval stype must be Lin or Log!")
 
     def __str__(self):
         if self.isLin:
-            type = Lin
+            stype = Lin
         else:
-            type = Log
-        return str( (self.lo, self.hi, self.n, type, self.step) )
+            stype = Log
+        return str((self.lo, self.hi, self.n, stype, self.step))
 
     def locate(self, x):
         """Locate x in the interval, returning the subinterval
@@ -161,11 +162,11 @@ class BasicInterval:
         in fact in the interval.  If x=hi, then i=n, and l=h=hi."""
 
         if self.isLin:
-            i = int( floor((x-self.lo)/self.step) )
+            i = int(floor((x-self.lo)/self.step))
             l = self.lo + i*self.step
             h = l + self.step
         else:
-            i = int( floor(log(x/self.lo)/self.step) )
+            i = int(floor(log(x/self.lo)/self.step))
             l = self.lo * exp(i*self.step)
             h = l * self.fac
         if (i == self.n-1):
@@ -188,12 +189,12 @@ class RefinedIntervalList1D:
     initial interval.  Ensure that all subintervals are sampled more
     densely than the base interval."""
 
-    def __init__(self, lo, hi, n, type="linear"):
+    def __init__(self, lo, hi, n, stype="linear"):
         """Define the overall interval and base sample density."""
 
         # Save some defining info.  Note that the internal representation
         # is always a positively directed interval, and if the list is of
-        # log type, the log boundaries are stored.
+        # log stype, the log boundaries are stored.
         if n <= 1:
             raise ValueError("Number of samples must be >1!")
         if lo == hi:
@@ -206,22 +207,22 @@ class RefinedIntervalList1D:
             self.isPos = 0
             self.lo = hi
             self.hi = lo
-        type = lower(type)
-        if type == "lin" or type == "linear":
+        stype = stype.lower()
+        if stype == "lin" or stype == "linear":
             self.isLin = 1
-        elif type == "log" or type == "logarithmic":
+        elif stype == "log" or stype == "logarithmic":
             self.isLin = 0
             if lo*hi <= 0.:
                 raise ValueError("Zero boundary for log interval!")
         else:
-            raise ValueError("Interval type must be Lin or Log!")
-        self.base = BasicInterval(self.lo, self.hi, n, type=type)
+            raise ValueError("Interval stype must be Lin or Log!")
+        self.base = BasicInterval(self.lo, self.hi, n, stype=stype)
 
         # Initialize the list with the base interval.
-        self.ilist = [ self.base ]
+        self.ilist = [self.base]
         self.nint = 1
         self.npts = n        # This is correct only at the end of updates/merges.
-        self.cumpts = [ n ]    # Ditto for this.
+        self.cumpts = [n]    # Ditto for this.
 
     def __str__(self):
 
@@ -267,9 +268,9 @@ class RefinedIntervalList1D:
         """Calculate the step size for a candidate inserted interval."""
 
         if self.isLin:
-            return int( ceil((hi-lo)/step) ) + 1
+            return int(ceil((hi-lo)/step)) + 1
         else:
-            return int( ceil(log(hi/lo)/step) ) + 1
+            return int(ceil(log(hi/lo)/step)) + 1
 
     def update(self, lo, hi, n):
         """Update the interval list to include a new interval."""
@@ -353,8 +354,8 @@ class RefinedIntervalList1D:
                 # We needn't update nhi here since range won't include it.
         for i in range(nlo, nhi):
             if self.ilist[i].step > step:
-                n = self._numPts(self.ilist[i].lo, self.ilist[i].hi, \
-                            step)
+                n = self._numPts(self.ilist[i].lo, self.ilist[i].hi,
+                                 step)
                 self.ilist[i].resample(n)
         self.merge()
 
@@ -366,7 +367,7 @@ class RefinedIntervalList1D:
 
         i = 0
         self.npts = self.ilist[0].n - 1
-        self.cumpts = [ self.npts ]
+        self.cumpts = [self.npts]
         while 1:
             if self.nint < i+2:        # Return if there is no next intvl.
                 self.npts = self.npts + 1
@@ -409,7 +410,7 @@ class RefinedIntervalList1D:
         # Use bisection.
         lo = 0
         hi = self.nint
-        mid = (lo+hi)/2
+        mid = (lo+hi)//2
         while 1:
             if self.ilist[mid].lo <= x < self.ilist[mid].hi:
                 break
@@ -417,7 +418,7 @@ class RefinedIntervalList1D:
                 hi = mid
             else:
                 lo = mid
-            mid = (lo+hi)/2
+            mid = (lo+hi)//2
         return self.ilist[mid]
 
     def nlocate(self, n):
@@ -436,7 +437,7 @@ class RefinedIntervalList1D:
         lo = 0
         hi = self.nint
         while lo < hi:
-            mid = (lo+hi)/2
+            mid = (lo+hi)//2
             if n+1 > self.cumpts[mid]:
                 lo = mid + 1
             else:
@@ -452,12 +453,11 @@ class RefinedIntervalList1D:
 class BasicGrid1D:
     """Create a 1-d linear- or log-spaced grid with automated evaluation of a 
     function and optional bookkeeping of local maxima.
-    
+
     For calculation of maxima properties and normalization, function values
     are treated as the logs of the function to be integrated."""
 
-
-    def __init__(self, lo, hi, n, type="linear", lml=None, rank='peak'):
+    def __init__(self, lo, hi, n, stype="linear", lml=None, rank='peak'):
         """Define the grid abscissa."""
 
         # Copy basic defining data and check for possible illegal values.
@@ -466,20 +466,20 @@ class BasicGrid1D:
         if n <= 1:
             raise ValueError("Number of points must be >1!")
         self.n = n
-        type = lower(type)
-        if type == "lin" or type == "linear":
+        stype = stype.lower()
+        if stype == "lin" or stype == "linear":
             self.isLin = 1
-        elif type == "log" or type == "logarithmic":
+        elif stype == "log" or stype == "logarithmic":
             self.isLin = 0
             if lo*hi <= 0.:
                 raise ValueError("Bad boundaries for log grid!")
         else:
-            raise ValueError("Grid type must be Lin or Log!")
+            raise ValueError("Grid stype must be Lin or Log!")
         self.lml = lml
         self.rank = rank
-        if rank.lower()=='peak':
+        if rank.lower() == 'peak':
             self.rank_peak = True
-        elif rank.lower()=='area':
+        elif rank.lower() == 'area':
             self.rank_peak = False
         else:
             raise ValueError('rank should be "peak" or "area"!')
@@ -523,8 +523,9 @@ class BasicGrid1D:
         # appropriately.
             if i == 0:
                 f = func(x)
-                if type(f) is TupleType or type(f) is ListType:
-                    if select is None: raise ValueError("must set select!")
+                if type(f) is tuple or type(f) is list:
+                    if select is None:
+                        raise ValueError("must set select!")
                     self.valSeq = len(f)
                     self.vals = zeros((self.n, self.valSeq), float)
                 else:
@@ -534,13 +535,14 @@ class BasicGrid1D:
                 self.vals[i] = func(x)
 
             if notify:
-                if i%notify == 0: print(i, x, self.vals[i])
+                if i % notify == 0:
+                    print(i, x, self.vals[i])
 
         # Here is the check for a local maximum, with special treatment for
         # possible "half peaks" at the ends.  These have fudged params
         # from a linear fit to 2 pts to find dx causing the log to drop 1/2.
 #*** check the endpt trtmt.
-            if self.lml != None and i > 1:
+            if self.lml is not None and i > 1:
                 if self.valSeq:
                     y3 = self.vals[i-2:i+1, select]
                 else:
@@ -572,7 +574,7 @@ class BasicGrid1D:
                         msr = area
                     self.lml.update(msr, (i, logA, mean, sig))
             x1, x2 = x2, x
-        
+
 #*** test treatment of endpoints, which was just copied from above
     def vecfunc(self, func, select=None):
         """Gather function values by applying func to a vector of grid abscissas."""
@@ -645,14 +647,14 @@ class BasicGrid1D:
 
         # Get abscissa value, using a stored value if available.  If the ordinates
         # have been calculated, get the ordinate; otherwise use None.
-        if (self.absc == None):
+        if (self.absc is None):
             if self.isLin:
                 x = self.lo + i*self.step
             else:
                 x = self.lo * exp(i*self.step)
         else:
             x = self.absc[i]
-        if self.vals == None:
+        if self.vals is None:
             v = None
         else:
             v = self.vals[i]
@@ -672,14 +674,17 @@ class BasicGrid1D:
         """Return the trapezoid rule quadrature of the values on the grid."""
 
         # An empty grid gives an error!
-        if (self.vals == None): raise RuntimeError("grid values not yet set!")
+        if (self.vals is None):
+            raise RuntimeError("grid values not yet set!")
 
         # Pick out the values to use if we have a grid of tuples.
         if self.valSeq:
-            if select == None: raise ValueError("must set select!")
+            if select is None:
+                raise ValueError("must set select!")
             vals = self.vals[:, select]
         else:
-            if select != None: raise ValueError("Grid function is a scalar!")
+            if select is not None:
+                raise ValueError("Grid function is a scalar!")
             vals = self.vals
 
         # The linear case can use array math.
@@ -689,34 +694,36 @@ class BasicGrid1D:
         # The log case can either step thru the grid to save space, or
         # make an array of widths to save time.  We do the latter here.
         w = self.absc
-        if w == None:
+        if w is None:
             w = self.lo * exp(self.step*fromfunction(lambda i: i, [self.n]))
         w = w[1:] - w[:-1]
         return sum(0.5 * w * (vals[:-1] + vals[1:]))
-
 
     def logtrapzd(self, select=None):
         """Return the log of the trapezoid rule quadrature of the values on the grid, 
         treating them as the log of the integrand."""
 
         # An empty grid gives an error!
-        if self.vals == None: raise RuntimeError("grid values not yet set!")
+        if self.vals is None:
+            raise RuntimeError("grid values not yet set!")
 
         # Make an array of step sizes.
         if self.isLin:
             w = zeros(self.n-1, float) + self.step
         else:
             w = self.absc
-            if w == None:
+            if w is None:
                 w = self.lo * exp(self.step*fromfunction(lambda i: i, [self.n]))
             w = w[1:] - w[:-1]
 
         # Pick out the values to use if we have a grid of tuples.
         if self.valSeq:
-            if select == None: raise ValueError("must set select!")
+            if select is None:
+                raise ValueError("must set select!")
             vals = self.vals[:, select]
         else:
-            if select != None: raise ValueError("Grid function is a scalar!")
+            if select is not None:
+                raise ValueError("Grid function is a scalar!")
             vals = self.vals
 
         # Calculate with respect to the max to avoid overflow.
@@ -733,7 +740,8 @@ class BasicGrid1D:
         """
 
         # An empty grid gives an error!
-        if self.vals == None: raise RuntimeError("grid values not yet set!")
+        if self.vals is None:
+            raise RuntimeError("grid values not yet set!")
 
         # Only accept 1 or 2 moments.
         if nmom:
@@ -750,10 +758,12 @@ class BasicGrid1D:
 
         # Pick out the values to use if we have a grid of tuples.
         if self.valSeq:
-            if select == None: raise ValueError("must set select!")
+            if select is None:
+                raise ValueError("must set select!")
             vals = self.vals[:, select]
         else:
-            if select != None: raise ValueError("Grid function is a scalar!")
+            if select is not None:
+                raise ValueError("Grid function is a scalar!")
             vals = self.vals
 
         # Calculate with respect to the max to avoid overflow.
@@ -769,7 +779,7 @@ class BasicGrid1D:
         fvals = fvals * exp(fmax-quad)
         ignd = self.absc*fvals
         mom1 = sum(0.5 * w * (ignd[:-1] + ignd[1:]))
-        if nmom==1:
+        if nmom == 1:
             return quad, mom1
         else:
             ignd = self.absc*ignd
@@ -807,25 +817,25 @@ class BasicGrid1D:
             grid = BasicGrid1D(lo, hi, n, Lin, self.lml, self.rank)
         else:
             grid = BasicGrid1D(lo, hi, n, Log, self.lml, self.rank)
-        if self.absc != None:
+        if self.absc is not None:
             grid.absc = self.absc[nlo:nhi+1]
-        if self.vals != None:
+        if self.vals is not None:
             grid.vals = self.vals[nlo:nhi+1]
         grid.valSeq = self.valSeq
         return grid
-        
+
 
 ################################################################################
 class Grid1D:
     """Create a 1-d grid with automated evaluation of a function and single-pass
     refinement in neighborhoods of local maxima."""
 
-    def __init__(self, lo, hi, n, type="linear", nmax=None, dynrange=1.e5,
+    def __init__(self, lo, hi, n, stype="linear", nmax=None, dynrange=1.e5,
                  sigpts=11, nsig=4, rank='peak'):
         """Define the base grid and parameters defining the refinement.
         There will be sigpts new points per each +-sigma range, for
         nsig sigmas.
-        
+
         Keep track of peaks according to peak amplitude by default; rank='area'
         uses peak area instead.  Note that using peak area is trouble-prone if
         there are many close or overlapping peaks; the estimated peak area may
@@ -835,15 +845,15 @@ class Grid1D:
 
         self.nmax = nmax
         self.lml = LabeledMaxList(nmax=nmax, dynrange=dynrange)
-        self.type = type
-        self.base = BasicGrid1D(lo, hi, n, type, lml=self.lml, rank=rank)
-        self.ilist = RefinedIntervalList1D(lo, hi, n, type)
+        self.stype = stype
+        self.base = BasicGrid1D(lo, hi, n, stype, lml=self.lml, rank=rank)
+        self.ilist = RefinedIntervalList1D(lo, hi, n, stype)
         self.nsig = nsig
         self.rank = rank
         self.rpts = nsig*(sigpts-1) + 1
         self.totpts = n
         self.func = None
-        self.glist = [ self.base ]
+        self.glist = [self.base]
 
     def __len__(self):
         """Total # of pts in the refined grid."""
@@ -862,8 +872,10 @@ class Grid1D:
     def __iter__(self):
         i = 0
         while 1:
-            try: yield self.__getitem__[i]
-            except IndexError: raise StopIteration
+            try:
+                yield self.__getitem__[i]
+            except IndexError:
+                raise StopIteration
             i += 1
 
     def firstpass(self, f, select=None, notify=None):
@@ -879,7 +891,7 @@ class Grid1D:
         resulting in a small inefficiency."""
 
         # Make sure we've done a firstpass.
-        if self.func == None:
+        if self.func is None:
             raise RuntimeError("Must do firstpass before refine!")
 
         # Limit the dynamic range to consider for the refinement, if requested.
@@ -902,15 +914,15 @@ class Grid1D:
                 self.glist.append(self.base.subgrid(intvl.lo,intvl.hi))
             else:
                 self.glist.append(BasicGrid1D(intvl.lo, intvl.hi, intvl.n,
-                    self.type, lml=self.rlml, rank=self.rank))
+                                              self.stype, lml=self.rlml, rank=self.rank))
 
         # Go thru the grid list, evaluating the function and compiling a refined
         # list of labeled maxima.  But don't duplicate the work done on the base!
-        if notify != None:
+        if notify is not None:
             print("Refining among ",len(self.glist), " subgrids:")
         for grid in self.glist:
             if grid.step != self.base.step:
-                if notify != None:
+                if notify is not None:
                     print(">>>Refining over [",grid.lo,", ",grid.hi,"]...")
                 grid.stepfunc(self.func, select=self.select, notify=notify)
 
@@ -940,11 +952,12 @@ class Grid1D:
         for grid in self.glist[1:]:
             l = grid.logtrapzd(select=select)
             # print repr(grid.lo), repr(grid.hi), grid.vals[0], grid.vals[-1], exp(l)
-            if l > lsum: l, lsum = lsum, l
+            if l > lsum:
+                l, lsum = lsum, l
             lsum += log(1. + exp(l-lsum))
-            #if l <= lsum:
+            # if l <= lsum:
             #    lsum += log(1. + exp(l-lsum))
-            #else:
+            # else:
             #    lsum = l + log(1. + exp(lsum-l))
             #lsum = log( exp(lsum) + exp(l) )
         return lsum
@@ -960,17 +973,17 @@ class Grid1D:
         # Sum over the refined grids taking care to avoid overflows.
         vals = []
         for grid in self.glist:
-            vals.append( grid.logtrapzd_mom(nmom, select) )
+            vals.append(grid.logtrapzd_mom(nmom, select))
         vals = array(vals)
         # The log integral:
         qvals = vals[:,0]
         qmax = qvals.max()
-        lquad = qmax + log( sum(exp(qvals-qmax)) )
+        lquad = qmax + log(sum(exp(qvals-qmax)))
         # The first moment, up to a factor exp(lquad).
         facs = exp(qvals - lquad)
-        mom1 = sum( facs*vals[:,1] )
+        mom1 = sum(facs*vals[:,1])
         if nmom == 1:
             return lquad, mom1
         else:
-            mom2 = sum( facs*vals[:,2] )
+            mom2 = sum(facs*vals[:,2])
             return lquad, mom1, mom2
