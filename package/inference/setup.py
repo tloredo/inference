@@ -9,14 +9,14 @@ def configuration(parent_package='',top_path=''):
     from numpy.distutils.misc_util import Configuration
     config = Configuration('inference', parent_package, top_path)
 
-    # config.add_subpackage('pie')
+    config.add_subpackage('pie')
+    config.add_subpackage('deriv')
+    config.add_subpackage('integrate')
     # config.add_subpackage('gauss')
     config.add_subpackage('count')
     # config.add_subpackage('montecarlo')
     # config.add_subpackage('drxn')
     config.add_subpackage('grid')
-    # config.add_subpackage('integrate')
-    # config.add_subpackage('deriv')
     # config.add_subpackage('signals')
     config.add_subpackage('utils')
 
