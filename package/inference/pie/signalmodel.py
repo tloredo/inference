@@ -2,8 +2,8 @@
 Parameterized signal model base class.
 """
 
-from param import *
-from autoname import HasAutoNamed
+from .param import *
+from .autoname import HasAutoNamed
 
 # Exception for running out of steps:
 class StopStepping(ParamError):

@@ -1,4 +1,4 @@
-from inference_base import Inference, maximize
+from .inference_base import Inference, maximize
 
 
 class MaxLikeInference(Inference):

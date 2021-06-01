@@ -33,7 +33,7 @@ class metaAutoName(type):
     """
 
     def __init__(cls, name, bases, dict):
-        for key,val in dict.items():
+        for key, val in dict.items():
             # Search for AutoNamed descriptors.
             if isinstance(val, AutoNamed):
                 # Tell the descriptor "key" is its name.
@@ -59,10 +59,9 @@ class AutoNamed(object):
 # complain that AutoNamed is not defined when it uses metaAutoName to construct
 # the HasAutoNamed class.
 
-class HasAutoNamed(object):
+class HasAutoNamed(object, metaclass=metaAutoName):
     """
     Empty base class that acts as a type for classes with AutoNamed
     descriptors.
     """
-    __metaclass__ = metaAutoName
-
+    pass

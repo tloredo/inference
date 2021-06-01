@@ -1,8 +1,9 @@
-from inference_base import Inference, maximize
-from inference.deriv import dllsteps, obsinfo
+from .inference_base import Inference, maximize
+from ..deriv import dllsteps, obsinfo
 
 # Conceptually, it's appropriate to subclass this from MaxLikeInference, but
 # there is so little inherited that it doesn't make any sense to subclass.
+
 
 class BayesianInference(Inference):
     """Base class for Bayesian inferences made using the product of
@@ -28,7 +29,7 @@ class BayesianInference(Inference):
     def score(self):
         """
         The function to optimize in a fit---here the log(prior*likelihood).
-        
+
         Note that a rigorous Bayesian 'optimum' requires specification of
         a utility (or loss) function; the decision-theoretic optimum maximizes
         the expected utility.
@@ -50,7 +51,7 @@ class BayesianInference(Inference):
         """
         The log posterior (prior*likelihood), implemented as a function of
         an array (or other sequence) of values of varying parameters.
-        
+
         This is intended for use by algorithms that require a function with a
         sequence argument, e.g., the observed information algorithm.
         """

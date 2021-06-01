@@ -1,5 +1,5 @@
-from autoname import AutoNamed, HasAutoNamed
-from logger import pielog
+from .autoname import AutoNamed, HasAutoNamed
+from .logger import pielog
 
 __all__ = ['Predictor', 'PredictorSet', 'DataError']
 

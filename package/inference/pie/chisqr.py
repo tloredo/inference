@@ -1,4 +1,4 @@
-from inference_base import Inference, minimize
+from .inference_base import Inference, minimize
 
 
 class ChisqrInference(Inference):

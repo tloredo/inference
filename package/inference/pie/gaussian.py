@@ -1,4 +1,4 @@
-from predictor import Predictor, PredictorHandler, DataError
+from .predictor import Predictor, PredictorHandler, DataError
 from numpy import array, concatenate
 import scipy.stats
 
@@ -112,16 +112,16 @@ class SampledGaussianHandler(PredictorHandler):
         # Change the data locns/sigmas if necessary.
         if locns and sigmas:
             if len(locns) != len(sigmas):
-                raise ValueError, 'locns/sigmas length mismatch!'
+                raise ValueError('locns/sigmas length mismatch!')
             self.locns = locns
             self.sigmas = sigmas
         elif locns:
             if len(locns) != self.ndata:
-                raise ValueError, 'Incorrect number of locns!'
+                raise ValueError('Incorrect number of locns!')
             self.locns = locns
         elif sigmas:
             if len(sigmas) != self.ndata:
-                raise ValueError, 'Incorrect number of sigmas!'
+                raise ValueError('Incorrect number of sigmas!')
             self.sigmas = sigmas
         self.get_prdxns()
         # Sample data via Gaussians.
@@ -165,7 +165,7 @@ class SampledGaussianHandler(PredictorHandler):
             self.sigmas = concatenate( (self.sigmas, (sigma,)) )
         elif locns and sigmas:
             if len(locns) != len(sigmas):
-                raise ValueError, 'locns/sigmas length mismatch!'
+                raise ValueError('locns/sigmas length mismatch!')
             self.ndata += len(locns)
             self.locns = concatenate( (self.locns, locns) )
             self.sigmas = concatenate( (self.sigmas, sigmas) )
@@ -175,7 +175,7 @@ class SampledGaussianHandler(PredictorHandler):
         elif len(self._locns.shape) == 2:
             self.dimen = self.locns.shape[1]
         else:
-            raise DataError, 'Locations should be scalars or 1-d arrays!'
+            raise DataError('Locations should be scalars or 1-d arrays!')
         # Update predictions.
         self.get_prdxns()
         
@@ -188,10 +188,10 @@ class SampledGaussianHandler(PredictorHandler):
     ## These are failed attempts to prevent user access to global data.
     ## Probably should make the data hidden.
     def __getitem__(self, key):
-        print 'Attempting item access of', key
+        print('Attempting item access of', key)
         
     def __setitem__(self, key, value):
-        print 'Attempting item change of', key
+        print('Attempting item change of', key)
         
         ##    def __getattribute__(self, name):
         ##        print 'Attempting direct attribute access for', name
@@ -223,7 +223,7 @@ class SampledGaussian(Predictor):
     handler_class = SampledGaussianHandler
     
     def __init__(self, *args, **kwds):
-        print 'args:', args
+        print('args:', args)
         try:
             self.doc = kwds['doc']
         except KeyError:
@@ -250,7 +250,7 @@ class SampledGaussian(Predictor):
             self._locns, self._vals, self._sigmas = args
             if len(self._locns) != len(self._vals) or \
             len(self._vals) != len(self._sigmas):
-                raise DataError, 'Mismatch in lengths of arguments!'
+                raise DataError('Mismatch in lengths of arguments!')
         elif len(args) == 1:
             all = args[0]
             try:
@@ -272,7 +272,7 @@ class SampledGaussian(Predictor):
                 self._vals = array(self.vals)
                 self._sigmas = array(self.sigmas)
             except:
-                raise DataError, 'Bad data array format!'
+                raise DataError('Bad data array format!')
                 # *** Should ndata, dimen be _ndata...?  Or eliminate _...?
                 # Lean toward latter, since handler will catch accesses (test this!).
         self.ndata = len(self._vals)
@@ -281,4 +281,4 @@ class SampledGaussian(Predictor):
         elif len(self._locns.shape) == 2:
             self.dimen = self.locns.shape[1]
         else:
-            raise DataError, 'Locations should be scalars or 1-d arrays!'
+            raise DataError('Locations should be scalars or 1-d arrays!')

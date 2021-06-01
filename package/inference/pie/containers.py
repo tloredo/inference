@@ -1,5 +1,5 @@
 from numpy import zeros, empty, linspace, nan
-from param import *
+from .param import *
 from inference.utils import pl, plot_bivar
 
 class ParamValues(object):
@@ -21,7 +21,7 @@ class ParamValues(object):
 
     def store(self, name, param):
         if name in self.names:
-            raise ParamError, 'Parameter value already stored!'
+            raise ParamError('Parameter value already stored!')
         self.names.append(name)
         self.docs[name] = param.doc
         setattr(self, name, param.copy_value())
@@ -81,7 +81,7 @@ class ScalarGrid(object):
         Implement default plots for 1-D and 2-D grids of scalar values.
         """
         if self.ndim == 1:
-            print 'Plotting 1-D grid values.'
+            print('Plotting 1-D grid values.')
             name, lo, hi, steps, stype = self.axes[0]
             if stype == lin_steps:
                 xvals = linspace(lo, hi, steps)
@@ -99,7 +99,7 @@ class ScalarGrid(object):
             else:
                 raise NotImplementedError('Plotting log steps not yet implemented!')
         elif self.ndim == 2:
-            print 'Plotting contours of 2-D grid values.'
+            print('Plotting contours of 2-D grid values.')
             x_name, x_lo, x_hi, x_steps, x_type = self.axes[0]
             y_name, y_lo, y_hi, y_steps, y_type = self.axes[1]
             if x_type == lin_steps and y_type == lin_steps:

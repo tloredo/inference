@@ -2,11 +2,11 @@
 Real-valued (i.e., float-valued) periodic parameters.
 """
 
-from param import *
-from realparam import RealParamHandler
+from .param import *
+from .realparam import RealParamHandler
 from scipy import exp, log, isinf, isnan
 
-from logger import pielog
+from .logger import pielog
 
 raise NotImplementedError('periodicparam.py not yet complete!')
 
@@ -52,14 +52,14 @@ class PeriodicParamHandler(RealParamHandler):
         elif len(range) == 1:  # A 2-tuple was passed.
             self.lo, self.hi = float(min(range[0])), float(max(range[0]))
         else:
-            raise ValueError, 'Range must be a pair of scalars or a 2-element sequence!'
+            raise ValueError('Range must be a pair of scalars or a 2-element sequence!')
         self.bounded = 1
 
     def next_step(self):
         if self.status != stepping:
-            raise ParamError, 'Parameter is not set to step!'
+            raise ParamError('Parameter is not set to step!')
         if self.step_num == self.steps-1:
-            raise ParamRangeError, 'Requested step beyond range!'
+            raise ParamRangeError('Requested step beyond range!')
         self.step_num += 1
         if self.stype == lin_steps:
             if self.step_num == self.steps-1:
@@ -75,9 +75,9 @@ class PeriodicParamHandler(RealParamHandler):
 
     def prev_step(self):
         if self.status != stepping:
-            raise ParamError, 'Parameter is not set to step!'
+            raise ParamError('Parameter is not set to step!')
         if self.step_num == 0:
-            raise ParamRangeError, 'Requested step beyond range!'
+            raise ParamRangeError('Requested step beyond range!')
         self.step_num -= 1
         if self.stype == lin_steps:
             if self.step_num == 0:
@@ -93,18 +93,18 @@ class PeriodicParamHandler(RealParamHandler):
 
     def check(self, percent=1.):
         if self.status != varying:
-            raise RuntimeError, 'Check only valid for varying parameter!'
+            raise RuntimeError('Check only valid for varying parameter!')
         pc = 100.*min(self._value-self.lo, self.hi-self._value)/(self.hi-self.lo)
         return pc >= percent
 
     def _unbounded_get_value(self):
         """Return a varying param's value mapped so its range is (-inf,inf)."""
         if self.status == undef:
-            raise ValueError, 'Parameter undefined!'
+            raise ValueError('Parameter undefined!')
         if self.status != varying:
-            raise RuntimeError, 'Unbounded access valid only for varying parameter!'
+            raise RuntimeError('Unbounded access valid only for varying parameter!')
         if not self.bounded:
-            raise ValueError, 'No bounds defined for parameter!'
+            raise ValueError('No bounds defined for parameter!')
         else:
 ##             # Handle roundoff error near boundaries.
 ##             # *** Make the constants platform-independent.
@@ -119,10 +119,10 @@ class PeriodicParamHandler(RealParamHandler):
         """Set a varying param's value via a transformed parameter that has
         its range mapped to (-inf,inf)."""
         if self.status != varying:
-            raise ParamError, 'Unbounded access valid only for varying parameter!'
+            raise ParamError('Unbounded access valid only for varying parameter!')
         # *** Is this test redundant?
         if not self.bounded:
-            raise ParamError, 'No bounds defined for parameter!'
+            raise ParamError('No bounds defined for parameter!')
         else:
             expv = exp(uvalue)
             if isinf(expv) or isnan(expv):

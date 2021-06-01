@@ -5,37 +5,46 @@ Enums and exceptions for parameters and parameterized models.
 Base class for parameters.
 """
 
-from autoname import AutoNamed
-from logger import pielog
+from .autoname import AutoNamed
+from .logger import pielog
+
+
+# TODO:  Py-3.4 added an enum module in the stdlib; use it here.
 
 # Enum for parameter status:
 class Status:
-    undef, fixed, stepping, varying = range(4)
+    undef, fixed, stepping, varying = list(range(4))
+
 
 undef, fixed, stepping, varying = \
-       Status.undef, Status.fixed, Status.stepping, Status.varying
+    Status.undef, Status.fixed, Status.stepping, Status.varying
 
 # Enum for step types:
+
+
 class StepType:
-    lin_steps, log_steps = range(2)
+    lin_steps, log_steps = list(range(2))
+
 
 lin_steps, log_steps = StepType.lin_steps, StepType.log_steps
 
 
 # Enum for parameter stepping direction:
 class Direction:
-    next, prev = range(2)
+    nextd, prevd = list(range(2))
 
-next, prev = Direction.next, Direction.prev
+
+nextd, prevd = Direction.nextd, Direction.prevd
+
 
 def reverse_direction(drxn):
     """Return the enum for the reverse of the passed direction enum."""
-    if drxn == next:
-        return prev
-    elif drxn == prev:
-        return next
+    if drxn == nextd:
+        return prevd
+    elif drxn == prevd:
+        return nextd
     else:
-        raise ValueError, "Invalid stepping direction!"
+        raise ValueError("Invalid stepping direction!")
 
 
 # Exceptions:
@@ -65,12 +74,12 @@ class Param(AutoNamed):
     """
 
     def _report_name(self, cls, name):
-	# Note that this gets called when the Param instance is
-	# created, which happens when the containing *class* is
-	# *defined*, not when it is instantiated.  We don't yet have
-	# an *instance* of the containing class to save state in,
-	# so we create and hold on to names that will hold the state
-	# later, after an instance is created.
+        # Note that this gets called when the Param instance is
+        # created, which happens when the containing *class* is
+        # *defined*, not when it is instantiated.  We don't yet have
+        # an *instance* of the containing class to save state in,
+        # so we create and hold on to names that will hold the state
+        # later, after an instance is created.
         pielog.debug('Param instance in %s is named %s', cls, name)
         self.name = name
         self.value_name = '__' + name + '_val'
@@ -193,4 +202,3 @@ class ScalarParamHandler(ParamHandler):
         setattr(self.owner, self.value_name, self._value)
         for listener in self.listeners:
             listener._on_param_value_change(self.param_inst)
-

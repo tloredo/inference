@@ -2,28 +2,31 @@
 Utilities and base class for inferences.
 """
 
-from sets import Set
 import inspect
 
-from param import *
-from autoname import HasAutoNamed
-from signalmodel import SignalModel, StopStepping
+from .param import *
+from .autoname import HasAutoNamed
+from .signalmodel import SignalModel, StopStepping
 from scipy import zeros, array, identity
-from NRMin import powell
-from predictor import PredictorSet
-from containers import ParamValues, ScalarGrid, VectorGrid
+from ..utils.nrmin import powell
+from .predictor import PredictorSet
+from .containers import ParamValues, ScalarGrid, VectorGrid
 
 # TODO:  Work out the minimizer situation; powell is imported from my
 # NRMin module (not in inference), based on Numerical Recipes.  Rewrite
 # it for inference, or use something in scipy.optimize.
 
 # Enum for extremize direction:
+
+
 class ExtremizeDrxn:
     maximize, minimize = 'max', 'min'
+
 
 maximize, minimize = ExtremizeDrxn.maximize, ExtremizeDrxn.minimize
 
 # Exceptions for inferences:
+
 
 class InferenceError(Exception):
     pass
@@ -67,7 +70,7 @@ class Inference(HasAutoNamed):
         # be interpreted as the negative log of a distribution
         # on parameter space.  This gets used to determine if
         # results on grids can be meaningfully integrated.
-        #if not hasattr(self, 'minus_log_df'):
+        # if not hasattr(self, 'minus_log_df'):
         #    self.log_dens = False
         if not hasattr(self, 'minus_log_df'):
             self.log_dens = False
@@ -107,8 +110,8 @@ class Inference(HasAutoNamed):
         self.params.extend(oparams)
         # Make sure params are unique; i.e., that the Predictors class
         # hasn't duplicated a param name.
-        if len(Set(self.params)) != len(self.params):
-            raise InferenceError, 'A parameter name is duplicated within this inference!'
+        if len(set(self.params)) != len(self.params):
+            raise InferenceError('A parameter name is duplicated within this inference!')
 
     def _get_signal_names(self, signal_params):
         """Use the source for the SignalModel and Predictors mixins to
@@ -127,13 +130,13 @@ class Inference(HasAutoNamed):
                         oparams.append(param)
                         signal_params.remove(param)
             if signal_params != []:
-                raise InferenceError, 'Some params not defined in SignalModel source!'
+                raise InferenceError('Some params not defined in SignalModel source!')
         except IOError:  # Only in the unlikely event of interactive model def'n
-            print 'Could not locate SignalModel source; proceeding with unordered params.'
+            print('Could not locate SignalModel source; proceeding with unordered params.')
             oparams = self.signal_class.param_names
         except TypeError:  # This is needed due to an apparent bug in inspect (failure can raise TypeError).
-            print 'Could not locate SignalModel source; proceeding with unordered params.'
-            print '(Note: This may be due to a bug in inspect.py)'
+            print('Could not locate SignalModel source; proceeding with unordered params.')
+            print('(Note: This may be due to a bug in inspect.py)')
             oparams = self.signal_class.param_names
         return oparams
 
@@ -154,7 +157,7 @@ class Inference(HasAutoNamed):
                             oparams.append(param)
                             pred_params.remove(param)
                 if pred_params != []:
-                    raise InferenceError, 'Some params not defined in Predictors source!'
+                    raise InferenceError('Some params not defined in Predictors source!')
             # Now do the same to get the Predictor order.
             opreds = []
             preds = self.pred_class.predictor_names[:]
@@ -165,20 +168,20 @@ class Inference(HasAutoNamed):
                         opreds.append(pred)
                         preds.remove(pred)
             if preds != []:
-                raise InferenceError, 'Some Predictor(s) not defined in Predictors source!'
+                raise InferenceError('Some Predictor(s) not defined in Predictors source!')
         except IOError:  # Only in the unlikely event of interactive pred. def'n
-            print 'Could not locate PredictorSet source; proceeding with unordered params.'
+            print('Could not locate PredictorSet source; proceeding with unordered params.')
             oparams.extend(self.pred_class.param_names)
             opreds = self.pred_class.predictor_names
         except:  # This is needed due to an apparent bug in inspect (failure can raise TypeError).
-            print 'Could not locate PredictorSet source; proceeding with unordered params.'
+            print('Could not locate PredictorSet source; proceeding with unordered params.')
             oparams.extend(self.pred_class.param_names)
             opreds = self.pred_class.predictor_names
         return oparams, opreds
         # Make sure params are unique; i.e., that the Predictors class
         # hasn't duplicated a param name.
-        if len(Set(self.params)) != len(self.params):
-            raise InferenceError, 'A parameter name is duplicated within this inference!'
+        if len(set(self.params)) != len(self.params):
+            raise InferenceError('A parameter name is duplicated within this inference!')
 
     def _on_param_status_change(self, param, old, new):
         """Maintain lists of fixed, varying, and stepping variables. Initialize
@@ -189,7 +192,7 @@ class Inference(HasAutoNamed):
         if old == new:
             if new == stepping:
                 # If a stepping param is adjusted, reset all of them.
-                self.stepping_info[param] = next
+                self.stepping_info[param] = nextd
                 self.reset_steps()
             return
         if old == undef:
@@ -199,7 +202,7 @@ class Inference(HasAutoNamed):
                 self.varying_params.append(param)
             elif new == stepping:
                 self.stepping_params.append(param)
-                self.stepping_info[param] = next
+                self.stepping_info[param] = nextd
                 self.reset_steps()
         if old == fixed:
             self.fixed_params.remove(param)
@@ -207,7 +210,7 @@ class Inference(HasAutoNamed):
                 self.varying_params.append(param)
             elif new == stepping:
                 self.stepping_params.append(param)
-                self.stepping_info[param] = next
+                self.stepping_info[param] = nextd
                 self.reset_steps()
         if old == varying:
             self.varying_params.remove(param)
@@ -215,7 +218,7 @@ class Inference(HasAutoNamed):
                 self.fixed_params.append(param)
             elif new == stepping:
                 self.stepping_params.append(param)
-                self.stepping_info[param] = next
+                self.stepping_info[param] = nextd
                 self.reset_steps()
         if old == stepping:
             self.stepping_params.remove(param)
@@ -251,7 +254,7 @@ class Inference(HasAutoNamed):
         # this will result in a duplicate call to on_param_change.
         for param in self.stepping_params:
             param.first_step()
-            self.stepping_info[param] = next
+            self.stepping_info[param] = nextd
 
     def next_step(self):
         """
@@ -271,12 +274,13 @@ class Inference(HasAutoNamed):
         last = self.stepping_params[-1]
         for param in self.stepping_params:
             drxn = self.stepping_info[param]
+            # print('Stepping param', param.name, drxn)
             try:
                 # Try stepping a param in its current drxn;
                 # return at the 1st success.
-                if drxn == next:
+                if drxn == nextd:
                     param.next_step()
-                elif drxn == prev:
+                elif drxn == prevd:
                     param.prev_step()
                 return
             except ParamRangeError:
@@ -288,7 +292,7 @@ class Inference(HasAutoNamed):
                     # an optimization if the user expects varying params
                     # to be in a good start state (an unlikely sit'n).
                     self.reset_steps()
-                    raise StopStepping, "Attempted to step beyond the last step!"
+                    raise StopStepping("Attempted to step beyond the last step!")
                 else:
                     self.stepping_info[param] = reverse_direction(drxn)
 
@@ -313,7 +317,7 @@ class Inference(HasAutoNamed):
         assigned to the currently varying parameters in the order they
         were declared varying."""
         if len(args) != len(self.varying_params):
-            raise ParamError, 'Wrong number of varying params!'
+            raise ParamError('Wrong number of varying params!')
         for param, val in zip(self.varying_params, args):
             param.set_value(val)
 
@@ -339,7 +343,7 @@ class Inference(HasAutoNamed):
             elif param.status == varying:
                 param.vary(getattr(pv,name))
             else:
-                raise ParamError, 'Use set_params only when params are fixed or varying!'
+                raise ParamError('Use set_params only when params are fixed or varying!')
 
     # *** Make versions of show*() that return strings.
 
@@ -348,9 +352,9 @@ class Inference(HasAutoNamed):
         f = [param.name for param in self.fixed_params]
         s = [param.name for param in self.stepping_params]
         v = [param.name for param in self.varying_params]
-        print 'Fixed params:   ', f
-        print 'Stepping params:', s
-        print 'Varying params: ', v
+        print('Fixed params:   ', f)
+        print('Stepping params:', s)
+        print('Varying params: ', v)
 
     def show(self):
         """Print basic parameter info: name, value, doc."""
@@ -362,7 +366,7 @@ class Inference(HasAutoNamed):
         # Maybe just try calling a show_extra() method the user can
         # optionally define in their model class.
         for name in self.params:
-            print getattr(self, name).show()
+            print(getattr(self, name).show())
 
     def _score(self, args):
         """
@@ -386,14 +390,15 @@ class Inference(HasAutoNamed):
         else:
             for param, val in zip(self.varying_params, args):
                 param.set_value(val)
-        ## print args, self.objective()
+        # print args, self.objective()
         if self.extremize == minimize:
             return self.score()
         else:
             return -self.score()
 
     def do_grid(self, vargrid=False, method=None, tol=None, nlog=None):
-        """Evaluate the inference on the grid defined by stepped params.
+        """
+        Evaluate the inference on the grid defined by stepped params.
 
         If there are no varying params, the score function is
         evaluated on the grid and returned in a SimpleValueGrid.
@@ -408,7 +413,7 @@ class Inference(HasAutoNamed):
         """
         results = ScalarGrid(self.stepping_params)
         vdim = len(self.varying_params)
-        #if vargrid and (vdim == 0):
+        # if vargrid and (vdim == 0):
         #    raise InferenceError, 'vargrid argument invalid with no varying params!'
         if self.varying_params and vargrid:
             vresults = VectorGrid(self.stepping_params, self.varying_params)
@@ -419,8 +424,8 @@ class Inference(HasAutoNamed):
         while True:
             nstep += 1
             ind = self.step_nums()
-            if nlog and nstep%nlog==0:
-                print 'Calculating grid step', nstep, '(', ind, ')...'
+            if nlog and nstep % nlog == 0:
+                print('Calculating grid step', nstep, '(', ind, ')...')
             # Either optimize or just evaluate.
             if self.varying_params:
                 param_vals, extremum, n = self.optimize(method=method, tol=tol)
@@ -436,7 +441,7 @@ class Inference(HasAutoNamed):
                         if extremum < opt_val:
                             opt_val, opt_ind = extremum, ind
                 if vargrid:
-                    print vresults.values[ind], param_vals
+                    print(vresults.values[ind], param_vals)
                     if vdim == 1:
                         vresults.values[ind] = param_vals[0]
                     else:
@@ -444,11 +449,11 @@ class Inference(HasAutoNamed):
             else:
                 results.values[ind] = self.score()
             # Log results if requested.
-            if nlog and nstep%nlog==0:
+            if nlog and nstep % nlog == 0:
                 if self.varying_params:
-                    print '  ->', param_vals, extremum, n
+                    print('  ->', param_vals, extremum, n)
                 else:
-                    print '  ->', results.values[ind]
+                    print('  ->', results.values[ind])
             try:
                 self.next_step()
             except StopStepping:
@@ -477,15 +482,15 @@ class Inference(HasAutoNamed):
         elif self.min_method:
             method = self.min_method.lower()
         else:
-            raise InferenceError, 'No minimization method has been specified!'
+            raise InferenceError('No minimization method has been specified!')
         if tol is None:
             if self.min_tol is None:
-                raise InferenceError, 'No minimization tolerance has been specified!'
+                raise InferenceError('No minimization tolerance has been specified!')
         # Most methods require a vector of starting param values and
         # a scale for each; collect this info here (transformed if necessary).
         p, d = [], []
         if self.varying_params == []:
-            raise InferenceError, 'No parameters are set to vary for fitting!'
+            raise InferenceError('No parameters are set to vary for fitting!')
         if self.use_unbounded:
             for param in self.varying_params:
                 # Calculate delta for the unbounded version.
@@ -511,22 +516,21 @@ class Inference(HasAutoNamed):
             dd = identity(len(d)) * array(d, float)
             # For Powell, extra = # of iters
             params, extremum, extra = powell(self._score, p, drxns=dd,
-                    ftol=1.e-3, maxit=300)
+                                             ftol=1.e-3, maxit=300)
             # Repeat from the 1st fit, with smaller scales and shuffling
             # the directions to avoid Powell's too-common collapsing to a
             # subspace.
             dd = 0.2 * identity(len(d)) * array(d, float)
             params, extremum, extra = powell(self._score, params[:], drxns=dd,
-                    ftol=1.e-3, maxit=200, shuffle=True)
+                                             ftol=1.e-3, maxit=200, shuffle=True)
         else:
-            raise InferenceError, 'Invalid minimization method specified!'
+            raise InferenceError('Invalid minimization method specified!')
         if self.extremize == maximize:  # adjust for sign reversal
             extremum = -extremum
         if self.use_unbounded:  # Convert unbounded values back to normal.
             for i, param in enumerate(self.varying_params):
                 params[i] = param.get_value()
         return params, extremum, extra
-
 
     # *** Potentially confusing that fit returns different types of
     # output for different param status, e.g., just a scalar for
