@@ -1,10 +1,17 @@
 from numpy import ones, zeros, shape, sum, newaxis, sqrt
-import vba
+
+# TODO: Use placeholder until vba is updated:
+# import vba
 
 __all__ = ['BA', 'BAObj']
 
+# The placeholder:
+vba = object()
+
+
 # A global for alerting user to an untested method.
 FIRSTTIME = True
+
 
 class BA:
     """
@@ -98,7 +105,7 @@ class BA:
 #...    Calculate the metric and various derived quantities.  Store them
 #...    for possible future use before returning.
         self.metric, self.L, self.Jac, self.proj, self.ampl, self.suf =\
-           vba.metricAnalysis(self.modvals, self.std_smpls)
+            vba.metricAnalysis(self.modvals, self.std_smpls)
         self.Q = self.dsqr - self.suf
         self.pars = params
         self.Jac = 1. / self.Jac
@@ -228,7 +235,7 @@ class BAObj:
 #...    Calculate the metric and various derived quantities.  Store them
 #...    for possible future use before returning.
         self.metric, self.L, self.Jac, self.proj, self.ampl, self.suf =\
-           vba.metricAnalysis(self.modvals, self.obj.std_smpls)
+            vba.metricAnalysis(self.modvals, self.obj.std_smpls)
         self.Q = self.dsqr - self.suf
         self.pars = params
         self.Jac = 1. / self.Jac
