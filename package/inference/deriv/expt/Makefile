@@ -1,5 +1,10 @@
-FC= g77
-FFLAGS= -O -fno-automatic
+# FC= g77
+# FFLAGS= -O -fno-automatic
+
+FC= gfortran
+# -fno-automatic saves local vars (vs. using stack for small vars)
+# -O is a gcc optimization option
+FFLAGS= -fno-automatic -O
 
 _obsinfo.o:  _obsinfo.f
 	$(FC) -c _obsinfo.f

@@ -1,4 +1,4 @@
-import _ofinfo as f2pymodule
+import _obsinfo as f2pymodule
 
 #FortranType = type(cbmlike.gammln)
 
@@ -12,7 +12,9 @@ for name in dir(f2pymodule):
     except:
         continue
     # Ignore __doc__, __file__, __name__, etc.
-    if type(obj) == str: continue
-    print ':'*72
-    print obj.__doc__
-    print
+    if type(obj) == str:
+        continue
+    print(':'*72)
+    print(f'Name: {name}\n')
+    print(obj.__doc__)
+    print()

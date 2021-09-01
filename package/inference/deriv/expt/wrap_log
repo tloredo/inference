@@ -6,12 +6,12 @@ Instructions for f2py wrapping of selected subroutins in oinfomodule.f.
 
 * Create an initial .pyf file:
 
-make _oinfo-raw.pyf
+make _obsinfo-raw.pyf
 
 
-* Move it to oinfomodule.pyf, which will be what is actually used:
+* Move it to obsinfomodule.pyf, which will be what is actually used:
 
-mv _oinfo-raw.pyf _oinfo.pyf
+mv _obsinfo-raw.pyf _oinfo.pyf
 
 We do this so that "make <>.pyf" doesn't overwrite a hand-modified .pyf 
 file.
@@ -21,27 +21,27 @@ file.
 in this module use external functions with the same structure, we
 can replace the two __user__routines with a single one:
 
-python module oinfo__user__routines 
-    interface oinfo_user_interface 
+python module obsinfo__user__routines 
+    interface obsinfo_user_interface 
         function logf(n,x) result (r)
             integer optional,intent(in),check(len(x)>=n),depend(x) :: n=len(x)
             real*8 dimension(n),intent(in) :: x
             real*8 intent(out) :: r
         end function logf
-    end interface oinfo_user_interface
-end python module oinfo__user__routines
+    end interface obsinfo_user_interface
+end python module obsinfo__user__routines
 
 
 * Edit the "use" lines in the main module section:
 
-            use oinfo__user__routines, f=> logf
+            use obsinfo__user__routines, f=> logf
 ...
-            use oinfo__user__routines, lf=>logf
+            use obsinfo__user__routines, lf=>logf
 
 
 * Make the module:
 
-make _ofinfo.so
+make _obsinfo.so
 
 
 * Check the signatures:

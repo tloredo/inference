@@ -86,6 +86,6 @@ def ysqr(x,y):
     return y*y
 
 norm = cub_2d_e2r2_11_28a(unity)
-print 'Norm: ', norm, norm-pi
-print 'Means: ', cub_2d_e2r2_11_28a(xval)/norm, cub_2d_e2r2_11_28a(yval)/norm
-print 'Variances: ', cub_2d_e2r2_11_28a(xsqr)/norm, cub_2d_e2r2_11_28a(ysqr)/norm
+print('Norm: ', norm, norm-pi)
+print('Means: ', cub_2d_e2r2_11_28a(xval)/norm, cub_2d_e2r2_11_28a(yval)/norm)
+print('Variances: ', cub_2d_e2r2_11_28a(xsqr)/norm, cub_2d_e2r2_11_28a(ysqr)/norm)

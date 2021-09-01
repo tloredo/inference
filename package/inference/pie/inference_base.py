@@ -50,8 +50,10 @@ class Inference(HasAutoNamed):
         self.varying_params = []
         self.stepping_params = []
         self.stepping_info = {}  # vals = lists: [drxn, index, steps]
+
         # This sets whether to use unbounded transforms of varying params.
         self.use_unbounded = False
+
         self.on_use_done = False
 
         # ??? Keep lists of current values of various param types?
@@ -496,7 +498,8 @@ class Inference(HasAutoNamed):
                 # Calculate delta for the unbounded version.
                 uv = param._unbounded_get_value()
                 v = param.get_value()
-                try:  # We may need to try a step in both directions.
+                # We may need to try a step in both directions.
+                try:
                     param.set_value(v+param.delta)
                     uv2 = param._unbounded_get_value()
                     d.append(uv2-uv)
