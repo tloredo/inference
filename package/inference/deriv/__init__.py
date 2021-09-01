@@ -1,5 +1,5 @@
 """
-deriv:  Utilities calculating derivatives useful for statistical computation
+deriv:  Numerical derivatives useful for statistical computation
 """
 
 from .obsinfo import dllsteps, obsinfo
