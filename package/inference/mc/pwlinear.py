@@ -1,7 +1,7 @@
 from numpy import linspace, concatenate, zeros, sqrt, log, exp
 from numpy import iterable, empty, any
 from numpy.random import rand
-from population import Population
+from .population import Population
 
 __all__ = ['PWLinear']
 

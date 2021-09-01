@@ -27,17 +27,17 @@ class Population(object):
                 self.items = items
             except TypeError:  # items is an int
                 self.npopn = int(items)
-                self.items = range(self.npopn)
+                self.items = list(range(self.npopn))
         elif items is None:  # Use indices as items
             self.equiprob = False
             self.npopn = len(weights)
-            self.items = range(self.npopn)
+            self.items = list(range(self.npopn))
             self.weights = array(weights, float)
         else:  # Use a list of items *and* weights
             self.equiprob = False
             self.npopn = len(weights)
             if len(items) != self.npopn:
-                raise ValueError, 'Lengths of items & weights must match!'
+                raise ValueError('Lengths of items & weights must match!')
             self.items = items
             self.weights = array(weights, float)
         
@@ -52,7 +52,7 @@ class Population(object):
         """
         # *** Implement equiprob case.
         if self.equiprob:
-            raise NotImplementedError, 'Awaiting code...'
+            raise NotImplementedError('Awaiting code...')
         if not self.did_init:
             self.sampler = _ppssampler(self.weights)
             self.did_init = True
@@ -100,12 +100,12 @@ class Population(object):
         else:
             # This part of setup has to be done before any sampling.
             if not self.did_init:
-                print 'Initing ppssampler...'
+                print('Initing ppssampler...')
                 self.sampler = _ppssampler(self.weights)
                 self.did_init = True
             # This part has to be done before any sampling w/o replacement.
             if not self.did_Sampford_init:
-                print 'Initing wts...'
+                print('Initing wts...')
                 self.sort_indices, self.sort_wts, self.tot_wt = \
                     self.sampler.prepwts(self.weights)
                 self.max_wt = self.sort_wts[0]/self.tot_wt  # Max wt, normed
@@ -114,11 +114,11 @@ class Population(object):
                 self.did_Sampford_tables = False
             # This part has to be done when sample size changes.
             if self.nsamp != nsamp:
-                print 'Initing ratios...'
+                print('Initing ratios...')
                 if nsamp > self.npopn:
-                    raise ValueError, 'nsamp larger than population size!'
+                    raise ValueError('nsamp larger than population size!')
                 if nsamp*self.max_wt > 1:
-                    raise ValueError, 'Sample size too large for PPS sampling!'
+                    raise ValueError('Sample size too large for PPS sampling!')
                 self.sampler.prepratios(nsamp, self.sort_wts, self.tot_wt)
                 self.did_Sampford_tables = False
                 self.nsamp = nsamp
@@ -147,12 +147,12 @@ class Population(object):
         else:
             # This part of setup has to be done before any sampling.
             if not self.did_init:
-                print 'Initing ppssampler...'
+                print('Initing ppssampler...')
                 self.sampler = _ppssampler(self.weights)
                 self.did_init = True
             # This part has to be done before any sampling w/o replacement.
             if not self.did_Sampford_init:
-                print 'Initing wts...'
+                print('Initing wts...')
                 self.sort_indices, self.sort_wts, self.tot_wt = \
                     self.sampler.prepwts(self.weights)
                 self.max_wt = self.sort_wts[0]/self.tot_wt  # Max wt, normed
@@ -160,18 +160,18 @@ class Population(object):
                 self.did_Sampford_init = True
             # This part has to be done when sample size changes.
             if self.nsamp != nsamp:
-                print 'Initing ratios...'
+                print('Initing ratios...')
                 if nsamp > self.npopn:
-                    raise ValueError, 'nsamp larger than population size!'
+                    raise ValueError('nsamp larger than population size!')
                 if nsamp*self.max_wt > 1:
-                    raise ValueError, 'Sample size too large for PPS sampling!'
+                    raise ValueError('Sample size too large for PPS sampling!')
                 self.sampler.prepratios(nsamp, self.sort_wts, self.tot_wt)
                 self.sampler.prepratiotables()
                 self.did_Sampford_tables = True
                 self.nsamp = nsamp
             # This may happen if subset_pps is called before subset_pps5.
             if not self.did_Sampford_tables:
-                print 'Initing ratio tables...'
+                print('Initing ratio tables...')
                 self.sampler.prepratiotables()
                 self.did_Sampford_tables = True
             self.ntry, indices = self.sampler.samplenr5()
@@ -213,7 +213,7 @@ class Population1D(Population):
         if end is None:
             end = self.vals[-1]
         if start>self.vals[0] or end<self.vals[-1]:
-            raise ValueError, 'Range must span the range of sampled values!'
+            raise ValueError('Range must span the range of sampled values!')
         # Start the descending CDF.
         absc, ord = [start], [1.]
         # Add pairs of points for each uncensored value, defining jumps.
@@ -241,7 +241,7 @@ class Population1D(Population):
         the range of uncensored values.
         """
         if not pl:
-            raise RuntimeError, 'Cannot plot without pylab!'
+            raise RuntimeError('Cannot plot without pylab!')
         if start is None:
             start = self.vals[0]
         if end is None:

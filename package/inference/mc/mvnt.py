@@ -13,13 +13,13 @@ class MVN(object):
             covar = diag(ones(self.ndim))
         if covar != None:
             if icovar != None:
-                raise ValueError, 'Specify only one of covar/icovar!'
+                raise ValueError('Specify only one of covar/icovar!')
             self.covar = covar
             ccopy, self.L, self.norm, err = _mvnt.mvnini(covar, 0)
         else:
             self.icovar = icovar
             self.covar, self.L, self.norm, err = _mvnt.mvnini(covar, 1)
-        if err != 0: raise RuntimeError, 'Linear algebra failure in MVN init!'
+        if err != 0: raise RuntimeError('Linear algebra failure in MVN init!')
         self.work = zeros(self.ndim, float)  # workspace for density calc'n
 
     def sample(self, n=None):
@@ -66,7 +66,7 @@ class MVT(object):
         self.ndim = len(mu)
         self.hess = hess
         self.ihess, self.L, self.norm, err = _mvnt.mvtini(nu, hess)
-        if err != 0: raise RuntimeError, 'Linear algebra failure in MVT init!'
+        if err != 0: raise RuntimeError('Linear algebra failure in MVT init!')
         self.work = zeros(self.ndim, float)  # workspace for density calc'n
 
     def sample(self, n=None):
@@ -112,20 +112,20 @@ class MVNKDE(object):
 
     def __init__(self, nodes, scale, covar=None, icovar=None):
         if covar is None and icovar is None:
-            raise ValueError, 'Must specify covar or icovar!'
+            raise ValueError('Must specify covar or icovar!')
         self.nodes = nodes.copy()
         self.tnodes = nodes.transpose().copy()
         self.nnodes, self.ndim = nodes.shape
         self.scale = scale
         if covar != None:
             if icovar != None:
-                raise ValueError, 'Specify only one of covar/icovar!'
+                raise ValueError('Specify only one of covar/icovar!')
             self.covar = covar
             ccopy, self.L, self.norm, err = _mvnt.mvnini(covar, 0)
         else:
             self.icovar = icovar
             self.covar, self.L, self.norm, err = _mvnt.mvnini(covar, 1)
-        if err != 0: raise RuntimeError, 'Linear algebra failure in MVN init!'
+        if err != 0: raise RuntimeError('Linear algebra failure in MVN init!')
         self.work = zeros(self.ndim, float)  # workspace for density calc'n
         self.origin = zeros(self.ndim, float)
         self.randint = randint(0, self.nnodes)
