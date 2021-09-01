@@ -120,12 +120,12 @@ class BA:
 
         global FIRSTTIME
         if FIRSTTIME:
-            print '*** BA method covar is UNTESTED ***'  # Copied from old version--likely ok.
+            print('*** BA method covar is UNTESTED ***')  # Copied from old version--likely ok.
             FIRSTTIME = False
 
 #...    If we haven't already done the metric calculations, complain!
         if self.pars == None:
-            raise ValueError, 'Must calculate marginal first!'
+            raise ValueError('Must calculate marginal first!')
 
         return vba.covar(self.L)
 
@@ -250,12 +250,12 @@ class BAObj:
 
         global FIRSTTIME
         if FIRSTTIME:
-            print '*** BA method covar is UNTESTED ***'  # Copied from old version--likely ok.
+            print('*** BA method covar is UNTESTED ***')  # Copied from old version--likely ok.
             FIRSTTIME = False
 
 #...    If we haven't already done the metric calculations, complain!
         if self.pars == None:
-            raise ValueError, 'Must calculate marginal first!'
+            raise ValueError('Must calculate marginal first!')
         return vba.covar(self.L)
 
     def residuals(self, *params):
