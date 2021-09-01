@@ -16,7 +16,7 @@ The modules comprising the `inference` package fall into two categories:
   - *Signal models:* These modules implement functions and classes for calculating predictions from selected widely-used models in astronomy and physics, such as Keplerian models for orbital motion, or cosmological models for the distribution of luminous sources in space-time.
   - *Utilities:* These modules implement algorithms that are useful for statistical computation, but which may be useful in other settings; examples include multi-dimensional numerical integration and Monte Carlo algorithms.
 
-- **Parametric Inference Engine (PIE):** These modules comprise a framework facilitating exploring the parameter spaces of statistical models for data, for three different general parametric inference paradigms: *chi-squared* (more accurately, weighted least squares), *maximum likelihood*, and *Bayesian*.
+- **Parametric Inference Engine (PIE):** These modules comprise a framework facilitating exploring the parameter spaces of statistical models for data, for three different general parametric inference paradigms: *minimum chi-squared* (more accurately, weighted least squares), *maximum likelihood*, and *Bayesian*. The `PIE` framework is designed to enable straightforward switching (and comparison) between paradigms, when this is feasible. In particular, it's designed to help scientists comfortable with least squares and chi-squared minimization ease into Bayesian inference.
 
 For more information about `inference`, see our (preliminary and evolving) [documentation site](http://inference.astro.cornell.edu/inference/index.html).
 
