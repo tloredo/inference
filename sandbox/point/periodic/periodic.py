@@ -27,7 +27,7 @@ class PCModel(object):
         exact calculation.
         """
         if len(data.shape) != 1:
-            raise ValueError, 'Input must be 1-d float array!'
+            raise ValueError('Input must be 1-d float array!')
         self.data = data.copy()
         self.ndata = len(data)
         self.lndfac = gammaln(self.ndata+1)
@@ -42,7 +42,7 @@ class PCModel(object):
             else:
                 self.absc = None
         else:
-            raise ValueError, 'qpts must be a positive integer!'
+            raise ValueError('qpts must be a positive integer!')
         if nbins is not None:
             self.set_nbins(nbins)
         else:
@@ -77,7 +77,7 @@ class PCModel(object):
             else:
                 self.absc = None
         else:
-            raise ValueError, 'qpts must be a positive integer!'
+            raise ValueError('qpts must be a positive integer!')
 
     def _set_offset(self):
         # Bin data with current w params, and find the
@@ -92,14 +92,14 @@ class PCModel(object):
         Unspecified parameters (val=None) retain any previous settings.
         """
         if self.nbins is None:
-            raise ValueError, 'Must specify number of bins for the model!'
+            raise ValueError('Must specify number of bins for the model!')
         #print 'new:', w, wdot, wddot
         #print 'old:', self.w, self.wdot, self.wddot
         # If params changed, calculate event phases.
         if (w != self.w) or (wdot != self.wdot) or (wddot != self.wddot):
             # Require w be specified, in this call or a previous one.
             if w is None:
-                if self.w is None: raise ValueError, 'Need a w parameter!'
+                if self.w is None: raise ValueError('Need a w parameter!')
                 w = self.w
             else:
                 self.w = w
